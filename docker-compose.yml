@@ -4,3 +4,11 @@
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgresTemp
+      POSTGRES_PASSWORD: postgresTemp
+    ports:
+      - 5432:5432
