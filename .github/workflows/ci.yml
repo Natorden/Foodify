@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ "development" ]
 
+env:
+  solution: 'Foodify Backend/Foodify Backend.sln'
+
 jobs:
   build:
 
