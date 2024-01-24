@@ -10,10 +10,8 @@ on:
     branches: [ "development" ]
 
 jobs:
-  build:
-
+  setup:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -21,8 +19,20 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Restore dependencies
-      run: dotnet restore .Foodify Backend/Foodify Backend.sln
+      run: dotnet restore ./Foodify Backend/Foodify Backend.sln
+      
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+    - uses: actions/checkout@v3
     - name: Build
-      run: dotnet build .Foodify Backend/Foodify Backend.sln --no-restore
+      run: dotnet restore ./Foodify Backend/Foodify Backend.sln
+      
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v3
     - name: Test
-      run: dotnet test .Foodify Backend/Foodify Backend.sln --no-build --verbosity normal
+      run: dotnet restore ./Foodify Backend/Foodify Backend.sln
