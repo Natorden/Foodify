@@ -9,9 +9,6 @@ on:
   pull_request:
     branches: [ "development" ]
 
-env:
-  solution: 'Foodify Backend/Foodify Backend.sln'
-
 jobs:
   build:
 
@@ -22,10 +19,10 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore .Foodify Backend/Foodify Backend.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build .Foodify Backend/Foodify Backend.sln --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test .Foodify Backend/Foodify Backend.sln --no-build --verbosity normal
