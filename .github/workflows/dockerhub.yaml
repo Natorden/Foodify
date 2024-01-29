@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./src/AguthService/Dockerfile
+          - dockerfile: ./src/AuthService/Dockerfile
             image: nitrozeus1/foodify-auth-service
     permissions:
       contents: read
@@ -37,7 +37,7 @@ jobs:
         with:
           images: ${{ matrix.image }}
 
-      - name: Build and push Docker image Drill4Net.Agent.Service
+      - name: Build and push Docker image for Foodify
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
