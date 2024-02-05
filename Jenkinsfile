@@ -9,7 +9,6 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                sh "dotnet build"
                 sh "docker compose build"
             }
         }
