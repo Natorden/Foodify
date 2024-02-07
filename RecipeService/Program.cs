@@ -3,7 +3,6 @@ using E2EChatApp.Infrastructure.Factories;
 using RecipeService.Extensions;
 using RecipeService.Filters;
 using RecipeService.Infrastructure.Factories;
-using RecipeService.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
