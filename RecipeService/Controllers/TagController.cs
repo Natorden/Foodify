@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
+using RecipeService.Core.Models.Entities;
 using RecipeService.Core.Models.Exceptions;
 namespace RecipeService.Controllers;
 
@@ -14,14 +15,23 @@ public class TagController : ControllerBase {
     }
 
     #region GET
-    
+    /// <summary>
+    /// Retrieves a list of all tags.
+    /// </summary>
+    /// <returns>
+    /// A list of <see cref="Tag"/> objects.
+    /// </returns>
     [HttpGet]
     public async Task<IActionResult> GetTags()
     {
         var tags = await _tagService.GetAllTags();
         return Ok(tags);
     }
-    
+    /// <summary>
+    /// Retrieves a list of tags based on a search query.
+    /// </summary>
+    /// <param name="query">The search query string.</param>
+    /// <returns>A list of <see cref="Tag"/> objects.</returns>
     [HttpGet("search/{query}")]
     public async Task<IActionResult> GetTagsBySearch(string query)
     {
