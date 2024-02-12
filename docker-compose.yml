@@ -1,8 +1,18 @@
 ﻿services:
   authservice:
-    image: nitrozeus1/foodify-auth-service:$BUILD_NUMBER
+    image: authservice
     build:
       context: .
       dockerfile: AuthService/Dockerfile
     ports:
       - 5000:8080
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - ./seed-database:/docker-entrypoint-initdb.d

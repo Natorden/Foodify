@@ -21,10 +21,19 @@ CREATE TABLE recipes(
 );
 
 CREATE TABLE recipe_steps(
-    recipeId uuid NOT NULL
+    recipe_id uuid NOT NULL
      CONSTRAINT FK__recipe_steps__recipes REFERENCES recipes,
-    priority int NOT NULL,
-    title text NOT NULL,
+    priority INT NOT NULL,
+    title TEXT NOT NULL,
     description TEXT NOT NULL,
-    PRIMARY KEY (recipeId,priority)
-)
+    PRIMARY KEY (recipe_id,priority)
+);
+
+CREATE TABLE recipe_tags(
+    recipe_id UUID NOT NULL
+        CONSTRAINT FK__recipe_tags__recipes REFERENCES recipes,
+    tag_id UUID NOT NULL
+        CONSTRAINT FK__recipe_tags__tags REFERENCES tags,
+        PRIMARY KEY (recipe_id,tag_id)
+);
+
