@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
+using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
 using RecipeService.Core.Models.Entities;
 using RecipeService.Core.Models.Exceptions;
@@ -37,9 +38,10 @@ public class RecipeController : ControllerBase {
     /// </summary>
     /// <returns>A list of <see cref="ListRecipeDto"/> objects representing the recipes.</returns>
     [HttpGet]
-    public async Task<List<ListRecipeDto>> GetAllRecipes()
+    public async Task<IActionResult> GetAllRecipes()
     {
-        return await _recipeService.GetAllRecipes();
+        var recipes = await _recipeService.GetAllRecipes();
+        return Ok(recipes);
     }
     
     /// <summary>
@@ -48,9 +50,38 @@ public class RecipeController : ControllerBase {
     /// <param name="tagIds">The list of tag ids to match.</param>
     /// <returns>A list of <see cref="ListRecipeDto"/> objects that match the provided tags.</returns>
     [HttpGet("tags")]
-    public async Task<List<ListRecipeDto>> GetRecipesByTags([FromBody] List<Guid> tagIds) 
+    public async Task<IActionResult> GetRecipesByTags([FromBody] List<Guid> tagIds) 
     {
-        return await _recipeService.GetRecipesByTags(tagIds);
+        var recipes = await _recipeService.GetRecipesByTags(tagIds);
+        return Ok(recipes);
+    }
+
+    /// <summary>
+    /// Creates a new recipe with the provided binding model.
+    /// </summary>
+    /// <param name="model">The <see cref="RecipePostBindingModel"/> that contains the information for the new recipe.</param>
+    /// <returns>The <see cref="Guid"/> of the newly created recipe.</returns>
+    [HttpPost]
+    public async Task<IActionResult> CreateRecipe(RecipePostBindingModel model)
+    {
+        var recipeId = await _recipeService.CreateRecipe(model);
+        if (recipeId is null) {
+            throw new BadRequestException("Failed to create recipe");
+        }
+        return Ok(recipeId);
+    }
+
+    /// <summary>
+    /// Edits an existing recipe with the provided binding model.
+    /// </summary>
+    /// <param name="model">The <see cref="RecipePutBindingModel"/> that contains the information for the recipe to be edited.</param>
+    public async Task<IActionResult> EditRecipe(RecipePutBindingModel model)
+    {
+        var success = await _recipeService.EditRecipe(model);
+        if (!success) {
+            throw new BadRequestException("Failed to edit recipe");
+        }
+        return NoContent();
     }
     
     #endregion

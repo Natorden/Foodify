@@ -1,5 +1,7 @@
+using System.Data;
 using Dapper;
 using E2EChatApp.Infrastructure.Factories;
+using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
 using RecipeService.Core.Models.Entities;
 using RecipeService.Infrastructure.Interfaces;
@@ -99,6 +101,151 @@ public class RecipeRepository : IRecipeRepository
                 tagIds = tags
             });
         return dictionary.Values.ToList();
+    }
+    
+    #endregion
+
+    #region INSERT
+    
+    public async Task<Guid?> CreateRecipe(RecipePostBindingModel model)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        using var transaction = conn.BeginTransaction();
+        // Create recipe model
+        const string createRecipeSql = 
+            """
+                INSERT INTO recipes (title, info, created_by_id)
+                VALUES (@Title, @Info, gen_random_uuid()) --TODO: use logged in user ID
+                RETURNING id;
+            """;
+        var createdId = await conn.ExecuteScalarAsync<Guid>(createRecipeSql, model,transaction);
+        
+        if (!await CreateRecipeTags(model.Tags, conn, createdId, transaction)) return null;
+
+        if (!await CreateRecipeSteps(model.Steps, conn, createdId, transaction)) return null;
+
+        if (!await CreateRecipeIngredients(model.Ingredients, conn, createdId, transaction)) return null;
+
+        transaction.Commit();
+        return createdId;
+    }
+    
+    #endregion
+
+    #region UPDATE
+    
+    public async Task<bool> EditRecipe(RecipePutBindingModel model)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        using var transaction = conn.BeginTransaction();
+        // Update recipe model
+        const string createRecipeSql = 
+            """
+                UPDATE recipes SET
+                title = COALESCE(@title,title),
+                info = COALESCE(@info,info)
+                WHERE id = @id;
+            """;
+        var rowsUpdated = await conn.ExecuteAsync(createRecipeSql, model, transaction);
+        if (model.Tags is not null) {
+            await conn.ExecuteAsync(
+                "DELETE FROM recipe_tags WHERE recipe_id = @recipeId;",
+                new {recipeId = model.Id},
+                transaction);
+            
+            if (!await CreateRecipeTags(model.Tags, conn, model.Id, transaction)) return false;
+        }
+        if (model.Steps is not null) {
+            await conn.ExecuteAsync(
+                "DELETE FROM recipe_steps WHERE recipe_id = @recipeId;",
+                new {recipeId = model.Id},
+                transaction);
+            
+            if (!await CreateRecipeSteps(model.Steps, conn, model.Id, transaction)) return false;
+        }
+        if (model.Ingredients is not null) {
+            await conn.ExecuteAsync(
+                "DELETE FROM recipe_ingredients WHERE recipe_id = @recipeId;",
+                new {recipeId = model.Id},
+                transaction);
+            
+            if (!await CreateRecipeIngredients(model.Ingredients, conn, model.Id, transaction)) return false;
+        }
+        transaction.Commit();
+        return true;
+    }
+    
+    #endregion
+
+    #region Private methods
+    
+    private async static Task<bool> CreateRecipeTags(IReadOnlyCollection<Guid> tags, IDbConnection conn, Guid createdId, IDbTransaction transaction)
+    {
+        const string createTagsSql = 
+            """
+                INSERT INTO recipe_tags (recipe_id, tag_id)
+                VALUES (@recipeId, @tagId);
+            """;
+        
+        var rowsAffectedTags = await conn.ExecuteAsync(
+            createTagsSql, 
+            tags.Select(tag => 
+                new {
+                    tagId = tag,
+                    recipeId = createdId
+                }),
+            transaction);
+        
+        if (rowsAffectedTags != tags.Count) {
+            transaction.Rollback();
+            return false;
+        }
+        return true;
+    }
+    private async static Task<bool> CreateRecipeSteps(List<RecipeStepPutBindingModel> steps, IDbConnection conn, Guid createdId, IDbTransaction transaction)
+    {
+        const string createStepsSql = 
+            """
+                INSERT INTO recipe_steps (recipe_id, priority, title, description)
+                VALUES (@recipeId, @priority, @title, @description);
+            """;
+        
+        var rowsAffectedSteps = await conn.ExecuteAsync(
+            createStepsSql, 
+            steps.Select(step => 
+                new {
+                    recipeId = createdId,
+                    step.Priority,
+                    step.Title,
+                    step.Description
+                }),
+            transaction);
+        
+        if (rowsAffectedSteps != steps.Count) {
+            transaction.Rollback();
+            return false;
+        }
+        return true;
+    }
+    private async static Task<bool> CreateRecipeIngredients(List<RecipeIngredientPutBindingModel> ingredients, IDbConnection conn, Guid createdId, IDbTransaction transaction)
+    {
+        const string createIngredientsSql = 
+            """
+                INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, unit)
+                VALUES (@recipeId, @ingredientId, @quantity, @unit);
+            """;
+        var rowsAffectedIngredients = await conn.ExecuteAsync(createIngredientsSql, 
+            ingredients.Select(ingredient => new {
+                recipeId = createdId,
+                ingredient.IngredientId,
+                ingredient.Amount,
+                ingredient.Unit
+            }), transaction);
+        if (rowsAffectedIngredients != ingredients.Count) {
+            transaction.Rollback();
+            return false;
+        }
+        return true;
     }
     
     #endregion

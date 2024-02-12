@@ -1,4 +1,5 @@
 using RecipeService.Core.Interfaces;
+using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
 using RecipeService.Core.Models.Entities;
 using RecipeService.Infrastructure.Interfaces;
@@ -24,6 +25,24 @@ public class RecipeService : IRecipeService {
     public async Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags)
     {
         return await _recipeRepository.GetRecipesByTags(tags);
+    }
+    
+    #endregion
+
+    #region Create
+    
+    public async Task<Guid?> CreateRecipe(RecipePostBindingModel model)
+    {
+        return await _recipeRepository.CreateRecipe(model);
+    }
+    
+    #endregion
+
+    #region Update
+    
+    public async Task<bool> EditRecipe(RecipePutBindingModel model)
+    {
+        return await _recipeRepository.EditRecipe(model);
     }
     
     #endregion
