@@ -27,7 +27,7 @@ public class RecipeRepository : IRecipeRepository
                 FROM recipes r
                 LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
                 LEFT JOIN tags t ON t.id = rt.tag_id
-                WHERE r.id = @recipeId
+                WHERE r.id = @id
             """;
         await conn.QueryAsync<Recipe, Tag, Recipe>(
             query,
@@ -36,7 +36,8 @@ public class RecipeRepository : IRecipeRepository
                 recipeModel ??= recipe;
                 recipeModel.Tags.Add(tag);
                 return recipe;
-            });
+            },
+            new {id});
         return recipeModel;
     }
     
@@ -232,7 +233,7 @@ public class RecipeRepository : IRecipeRepository
         const string createIngredientsSql = 
             """
                 INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, unit)
-                VALUES (@recipeId, @ingredientId, @quantity, @unit);
+                VALUES (@recipeId, @ingredientId, @amount, @unit);
             """;
         var rowsAffectedIngredients = await conn.ExecuteAsync(createIngredientsSql, 
             ingredients.Select(ingredient => new {

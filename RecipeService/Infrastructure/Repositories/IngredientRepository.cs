@@ -68,8 +68,7 @@ public class IngredientRepository : IIngredientRepository
             """;
         var tagId = await conn.ExecuteScalarAsync<Guid>(sql, new {
             Id = Guid.NewGuid(),
-            model.Name,
-            model.Description
+            model.Name
         });
         return tagId;
     }

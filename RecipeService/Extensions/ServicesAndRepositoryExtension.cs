@@ -13,6 +13,7 @@ public static class ServicesAndRepositoryExtension
         
         services.AddTransient<IRecipeService, Core.Services.RecipeService>();
         services.AddTransient<ITagService, TagService>();
+        services.AddTransient<IIngredientService, IngredientService>();
         
         #endregion
 
@@ -20,6 +21,7 @@ public static class ServicesAndRepositoryExtension
         
         services.AddTransient<IRecipeRepository, RecipeRepository>();
         services.AddTransient<ITagRepository, TagRepository>();
+        services.AddTransient<IIngredientRepository, IngredientRepository>();
         
         #endregion
 

@@ -75,6 +75,7 @@ public class RecipeController : ControllerBase {
     /// Edits an existing recipe with the provided binding model.
     /// </summary>
     /// <param name="model">The <see cref="RecipePutBindingModel"/> that contains the information for the recipe to be edited.</param>
+    [HttpPut]
     public async Task<IActionResult> EditRecipe(RecipePutBindingModel model)
     {
         var success = await _recipeService.EditRecipe(model);

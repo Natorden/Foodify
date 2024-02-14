@@ -41,7 +41,7 @@ CREATE TABLE recipe_ingredients(
     recipe_id UUID NOT NULL
         CONSTRAINT FK__recipe_ingredients__recipes REFERENCES recipes,
     ingredient_id UUID NOT NULL
-        CONSTRAINT FK__recipe_ingredients__ingredients REFERENCES tags,
+        CONSTRAINT FK__recipe_ingredients__ingredients REFERENCES ingredients,
     unit int NOT NULL,
     amount int NOT NULL,
         PRIMARY KEY (recipe_id,ingredient_id)
