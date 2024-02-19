@@ -6,6 +6,13 @@
       dockerfile: AuthService/Dockerfile
     ports:
       - 5000:8080
+  recipeservice:
+    image: recipeservice
+    build:
+      context: .
+      dockerfile: RecipeService/Dockerfile
+    ports:
+      - 5100:8080
   db:
     image: postgres
     restart: always
@@ -15,4 +22,4 @@
     ports:
       - 5432:5432
     volumes:
-      - ./seed-database:/docker-entrypoint-initdb.d
+      - ./seed-database:/docker-entrypoint-initdb.
