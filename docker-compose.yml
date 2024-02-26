@@ -18,8 +18,8 @@
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: YwtnJsMdA8A9ky5XuE7QzyDZwXFyH9WHxTHt
     ports:
       - 5432:5432
     volumes:
-      - ./seed-database:/docker-entrypoint-initdb.
+      - ./seed-database:/docker-entrypoint-initdb.d

@@ -42,7 +42,11 @@ public class TagController : ControllerBase {
     #endregion
 
     #region POST
-
+    /// <summary>
+    /// Creates a new tag based on the specified binding model.
+    /// </summary>
+    /// <param name="model">The <see cref="TagPostBindingModel"/> containing the new tag's information.</param>
+    /// <returns>The newly created <see cref="Tag"/> object.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateTag(TagPostBindingModel model)
     {
