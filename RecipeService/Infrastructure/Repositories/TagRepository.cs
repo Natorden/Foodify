@@ -32,8 +32,8 @@ public class TagRepository : ITagRepository
         const string sql = 
             """
                 SELECT * FROM tags
-                WHERE Name LIKE @Query 
-                   OR Description LIKE @Query;
+                WHERE Name ILIKE @Query 
+                   OR Description ILIKE @Query;
             """;
         var tags = await conn.QueryAsync<Tag>(sql, new {
             Query = $"%{query}%"

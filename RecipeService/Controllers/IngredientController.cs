@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -32,8 +33,8 @@ public class IngredientController : ControllerBase {
     /// </summary>
     /// <param name="query">The search query string.</param>
     /// <returns>A list of <see cref="Ingredient"/> objects.</returns>
-    [HttpGet("search/{query}")]
-    public async Task<IActionResult> GetIngredientsBySearch(string query)
+    [HttpGet("search")]
+    public async Task<IActionResult> GetIngredientsBySearch([Required] [FromQuery] string query)
     {
         var ingredients = await _ingredientService.GetIngredientsBySearch(query);
         return Ok(ingredients);

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -32,8 +33,8 @@ public class TagController : ControllerBase {
     /// </summary>
     /// <param name="query">The search query string.</param>
     /// <returns>A list of <see cref="Tag"/> objects.</returns>
-    [HttpGet("search/{query}")]
-    public async Task<IActionResult> GetTagsBySearch(string query)
+    [HttpGet("search")]
+    public async Task<IActionResult> GetTagsBySearch([Required] [FromQuery] string query)
     {
         var tags = await _tagService.GetTagsBySearch(query);
         return Ok(tags);

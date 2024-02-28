@@ -32,7 +32,7 @@ public class IngredientRepository : IIngredientRepository
         const string sql = 
             """
                 SELECT * FROM ingredients
-                WHERE Name LIKE @Query;
+                WHERE Name ILIKE @Query;
             """;
         var ingredients = await conn.QueryAsync<Ingredient>(sql, new {
             Query = $"%{query}%"
