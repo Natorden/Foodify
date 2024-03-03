@@ -20,7 +20,7 @@ public class TagRepository : ITagRepository
         using var conn = await _connectionFactory.CreateAsync();
         const string query =
             """
-                SELECT * FROM tags;
+            SELECT * FROM tags;
             """;
         var tags = await conn.QueryAsync<Tag>(query);
         return tags.ToList();
@@ -31,9 +31,8 @@ public class TagRepository : ITagRepository
         using var conn = await _connectionFactory.CreateAsync();
         const string sql = 
             """
-                SELECT * FROM tags
-                WHERE Name ILIKE @Query 
-                   OR Description ILIKE @Query;
+            SELECT * FROM tags
+            WHERE Name ILIKE @Query;
             """;
         var tags = await conn.QueryAsync<Tag>(sql, new {
             Query = $"%{query}%"
@@ -46,8 +45,8 @@ public class TagRepository : ITagRepository
         using var conn = await _connectionFactory.CreateAsync();
         const string sql = 
             """
-                SELECT * FROM tags
-                WHERE Id = @Id;
+            SELECT * FROM tags
+            WHERE Id = @Id;
             """;
         var tag = await conn.QuerySingleOrDefaultAsync<Tag>(sql, new {
             Id = guid
@@ -63,14 +62,13 @@ public class TagRepository : ITagRepository
         using var conn = await _connectionFactory.CreateAsync();
         const string sql = 
             """
-                INSERT INTO tags (Id, Name, Description)
-                VALUES (@Id, @Name, @Description)
-                RETURNING id;
+            INSERT INTO tags (Id, Name)
+            VALUES (@Id, @Name)
+            RETURNING id;
             """;
         var tagId = await conn.ExecuteScalarAsync<Guid>(sql, new {
             Id = Guid.NewGuid(),
             model.Name,
-            model.Description
         });
         return tagId;
     }

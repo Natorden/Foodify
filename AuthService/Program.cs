@@ -187,7 +187,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseCors("Production");
 }
-
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -195,8 +194,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapPost("/hc", () => Results.Ok());
 
 app.UseMiddleware<CurrentContextMiddleware>();
 

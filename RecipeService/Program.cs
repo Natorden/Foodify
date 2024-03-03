@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using E2EChatApp.Infrastructure.Factories;
+using RecipeService.Core.Models.Exceptions;
 using RecipeService.Extensions;
 using RecipeService.Filters;
 using RecipeService.Infrastructure.Factories;
@@ -54,8 +55,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapPost("/hc", () => Results.Ok());
 
 //app.UseMiddleware<CurrentContextMiddleware>();
 

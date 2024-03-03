@@ -73,18 +73,18 @@ public class RecipeRepository : IRecipeRepository
         var dictionary = new Dictionary<Guid, ListRecipeDto>();
         const string query =
             """
-                WITH matching_tags AS (
-                    SElECT recipe_id, COUNT(tag_id) AS matches FROM recipe_tags rt
-                    WHERE tag_id IN @tagIds
-                    GROUP BY recipe_id
-                )
-                
-                SELECT r.Id,title,created_by_id, t.*
-                FROM recipes r
-                LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
-                LEFT JOIN tags t ON t.id = rt.tag_id
-                JOIN matching_tags ON r.id = matching_tags.recipe_id
-                ORDER BY matching_tags.matches DESC;
+            WITH matching_tags AS (
+                SElECT recipe_id, COUNT(tag_id) AS matches FROM recipe_tags rt
+                WHERE tag_id IN @tagIds
+                GROUP BY recipe_id
+            )
+            
+            SELECT r.Id,title,created_by_id, t.*
+            FROM recipes r
+            LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
+            LEFT JOIN tags t ON t.id = rt.tag_id
+            JOIN matching_tags ON r.id = matching_tags.recipe_id
+            ORDER BY matching_tags.matches DESC;
             """;
         await conn.QueryAsync<ListRecipeDto,Tag,ListRecipeDto>(
             query,

@@ -4,8 +4,7 @@ CREATE DATABASE foodify_recipe;
 
 CREATE TABLE tags(
     ID uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL
+    name TEXT NOT NULL
 );
 
 CREATE TABLE ingredients(
