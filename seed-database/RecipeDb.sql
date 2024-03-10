@@ -25,7 +25,7 @@ CREATE TABLE recipe_steps(
     priority INT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    PRIMARY KEY (recipe_id,priority)
+    PRIMARY KEY (recipe_id, priority)
 );
 
 CREATE TABLE recipe_tags(
@@ -33,7 +33,9 @@ CREATE TABLE recipe_tags(
         CONSTRAINT FK__recipe_tags__recipes REFERENCES recipes,
     tag_id UUID NOT NULL
         CONSTRAINT FK__recipe_tags__tags REFERENCES tags,
-        PRIMARY KEY (recipe_id,tag_id)
+    priority int NOT NULL,
+    PRIMARY KEY (recipe_id, tag_id),
+    CONSTRAINT UQ__recipe_tags__priority UNIQUE (recipe_id, priority)
 );
 
 CREATE TABLE recipe_ingredients(
@@ -43,6 +45,15 @@ CREATE TABLE recipe_ingredients(
         CONSTRAINT FK__recipe_ingredients__ingredients REFERENCES ingredients,
     unit int NOT NULL,
     amount int NOT NULL,
-        PRIMARY KEY (recipe_id,ingredient_id)
+    priority int NOT NULL,
+    PRIMARY KEY (recipe_id, ingredient_id),
+    CONSTRAINT UQ__recipe_ingredients__priority UNIQUE (recipe_id, priority)
 );
 
+CREATE TABLE recipe_images(
+    recipe_id uuid NOT NULL
+        CONSTRAINT FK__recipe_images__recipes REFERENCES recipes,
+    priority int NOT NULL,
+    url text NOT NULL,
+    PRIMARY KEY (recipe_id, priority)
+);

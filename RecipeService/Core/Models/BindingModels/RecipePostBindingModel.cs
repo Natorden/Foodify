@@ -9,6 +9,9 @@ public class RecipePostBindingModel {
     [MaxLength(1000)]
     public required string Info { get; set; }
     [Required]
+    [Length(1,6)]
+    public required List<string> Images { get; set; }
+    [Required]
     [Length(1,8)]
     public required List<Guid> Tags { get; set; }
     [Required]

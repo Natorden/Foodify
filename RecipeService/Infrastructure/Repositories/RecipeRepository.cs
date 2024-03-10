@@ -21,6 +21,7 @@ public class RecipeRepository : IRecipeRepository
     {
         using var conn = await _connectionFactory.CreateAsync();
         Recipe? recipeModel = null;
+        
         const string query =
             """
                 SELECT r.*, t.*
@@ -121,6 +122,8 @@ public class RecipeRepository : IRecipeRepository
             """;
         var createdId = await conn.ExecuteScalarAsync<Guid>(createRecipeSql, model,transaction);
         
+        if (!await CreateRecipeImages(model.Images, conn, createdId, transaction)) return null;
+        
         if (!await CreateRecipeTags(model.Tags, conn, createdId, transaction)) return null;
 
         if (!await CreateRecipeSteps(model.Steps, conn, createdId, transaction)) return null;
@@ -140,14 +143,26 @@ public class RecipeRepository : IRecipeRepository
         using var conn = await _connectionFactory.CreateAsync();
         using var transaction = conn.BeginTransaction();
         // Update recipe model
-        const string createRecipeSql = 
+        const string updateRecipeSql = 
             """
                 UPDATE recipes SET
                 title = COALESCE(@title,title),
                 info = COALESCE(@info,info)
                 WHERE id = @id;
             """;
-        var rowsUpdated = await conn.ExecuteAsync(createRecipeSql, model, transaction);
+        var rowsUpdated = await conn.ExecuteAsync(updateRecipeSql, model, transaction);
+        if (rowsUpdated == 0) {
+            transaction.Rollback();
+            return false;
+        }
+        if (model.Images is not null) {
+            await conn.ExecuteAsync(
+                "DELETE FROM recipe_images WHERE recipe_id = @recipeId;",
+                new {recipeId = model.Id},
+                transaction);
+            
+            if (!await CreateRecipeImages(model.Images, conn, model.Id, transaction)) return false;
+        }
         if (model.Tags is not null) {
             await conn.ExecuteAsync(
                 "DELETE FROM recipe_tags WHERE recipe_id = @recipeId;",
@@ -184,16 +199,17 @@ public class RecipeRepository : IRecipeRepository
     {
         const string createTagsSql = 
             """
-                INSERT INTO recipe_tags (recipe_id, tag_id)
-                VALUES (@recipeId, @tagId);
+                INSERT INTO recipe_tags (recipe_id, tag_id, priority)
+                VALUES (@recipeId, @tagId, @priority);
             """;
         
         var rowsAffectedTags = await conn.ExecuteAsync(
             createTagsSql, 
-            tags.Select(tag => 
+            tags.Select((tag, index) => 
                 new {
                     tagId = tag,
-                    recipeId = createdId
+                    recipeId = createdId,
+                    priority = index
                 }),
             transaction);
         
@@ -213,10 +229,10 @@ public class RecipeRepository : IRecipeRepository
         
         var rowsAffectedSteps = await conn.ExecuteAsync(
             createStepsSql, 
-            steps.Select(step => 
+            steps.Select((step, index) => 
                 new {
                     recipeId = createdId,
-                    step.Priority,
+                    priority = index,
                     step.Title,
                     step.Description
                 }),
@@ -232,17 +248,37 @@ public class RecipeRepository : IRecipeRepository
     {
         const string createIngredientsSql = 
             """
-                INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, unit)
-                VALUES (@recipeId, @ingredientId, @amount, @unit);
+                INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, unit, priority)
+                VALUES (@recipeId, @ingredientId, @amount, @unit, @priority);
             """;
         var rowsAffectedIngredients = await conn.ExecuteAsync(createIngredientsSql, 
-            ingredients.Select(ingredient => new {
+            ingredients.Select((ingredient, index) => new {
                 recipeId = createdId,
                 ingredient.IngredientId,
                 ingredient.Amount,
-                ingredient.Unit
+                ingredient.Unit,
+                priority = index
             }), transaction);
         if (rowsAffectedIngredients != ingredients.Count) {
+            transaction.Rollback();
+            return false;
+        }
+        return true;
+    }
+    private async static Task<bool> CreateRecipeImages(List<string> images, IDbConnection conn, Guid createdId, IDbTransaction transaction)
+    {
+        const string createIngredientsSql = 
+            """
+                INSERT INTO recipe_images (recipe_id, url, priority)
+                VALUES (@recipeId, @url, @priority);
+            """;
+        var rowsAffectedIngredients = await conn.ExecuteAsync(createIngredientsSql, 
+            images.Select((imageUrl, index) => new {
+                recipeId = createdId,
+                url = imageUrl,
+                priority = index
+            }), transaction);
+        if (rowsAffectedIngredients != images.Count) {
             transaction.Rollback();
             return false;
         }

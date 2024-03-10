@@ -8,6 +8,8 @@ public class RecipePutBindingModel {
     public string? Title { get; set; }
     [MaxLength(1000)]
     public string? Info { get; set; }
+    [Length(1,6)]
+    public required List<string>? Images { get; set; }
     [Length(1,8)]
     public List<Guid>? Tags { get; set; }
     [Length(1,32)]
