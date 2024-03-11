@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -22,6 +23,7 @@ public class TagController : ControllerBase {
     /// <returns>
     /// A list of <see cref="Tag"/> objects.
     /// </returns>
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetTags()
     {
@@ -48,6 +50,7 @@ public class TagController : ControllerBase {
     /// </summary>
     /// <param name="model">The <see cref="TagPostBindingModel"/> containing the new tag's information.</param>
     /// <returns>The newly created <see cref="Tag"/> object.</returns>
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateTag(TagPostBindingModel model)
     {

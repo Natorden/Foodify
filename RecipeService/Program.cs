@@ -1,5 +1,8 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using E2EChatApp.Infrastructure.Factories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using RecipeService.Core.Models.Exceptions;
 using RecipeService.Extensions;
 using RecipeService.Filters;
@@ -24,6 +27,29 @@ builder.Services
 builder.Services.AddProblemDetails();
 
 builder.Services.AddServicesAndRepositories();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var jwtConfig = builder.Configuration.GetSection("Jwt");
+        var key = Encoding.UTF8.GetBytes(jwtConfig.GetValue<string>("Key")
+                                         ?? throw new NullReferenceException("JWT key cannot be null"));
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig.GetValue<string>("Issuer"),
+            ValidAudience = jwtConfig.GetValue<string>("Audience"),
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
 
 // Set up the DB connection
 builder.Services.AddSingleton<IDbConnectionFactory>(_ =>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -22,6 +23,7 @@ public class IngredientController : ControllerBase {
     /// <returns>
     /// A list of <see cref="Ingredient"/> objects.
     /// </returns>
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetIngredients()
     {
@@ -33,6 +35,7 @@ public class IngredientController : ControllerBase {
     /// </summary>
     /// <param name="query">The search query string.</param>
     /// <returns>A list of <see cref="Ingredient"/> objects.</returns>
+    [Authorize]
     [HttpGet("search")]
     public async Task<IActionResult> GetIngredientsBySearch([Required] [FromQuery] string query)
     {

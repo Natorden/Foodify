@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -23,6 +24,7 @@ public class RecipeController : ControllerBase {
     /// </summary>
     /// <param name="id">The <see cref="Guid"/> of the recipe to retrieve.</param>
     /// <returns>The <see cref="Recipe"/> object with the specified ID.</returns>
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetRecipeById(Guid id)
     {
