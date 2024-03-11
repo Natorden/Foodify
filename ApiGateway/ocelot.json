@@ -7,7 +7,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Recipe/{catchAll}",
@@ -19,7 +19,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "{catchAll}",
@@ -31,7 +31,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Recipe/tags/{catchAll}",
@@ -44,7 +44,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Ingredient/{catchAll}",
@@ -56,7 +56,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Ingredient/search/{catchAll}",
@@ -69,7 +69,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Tag/{catchAll}",
@@ -81,7 +81,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/Tag/search/{catchAll}",
@@ -89,6 +89,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8080"
+    "BaseUrl": "http://localhost:5000"
   }
 }

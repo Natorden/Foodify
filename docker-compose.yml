@@ -11,13 +11,13 @@
     build:
       context: .
       dockerfile: RecipeService/Dockerfile
-    ports:
-      - 5100:8080
   apigateway:
     image: apiegateway
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
+    ports:
+      - 5100:8080
   db:
     image: postgres
     restart: always
