@@ -10,6 +10,7 @@ namespace RecipeService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RecipeController : ControllerBase {
     private readonly IRecipeService _recipeService;
     public RecipeController(IRecipeService recipeService)
@@ -24,7 +25,6 @@ public class RecipeController : ControllerBase {
     /// </summary>
     /// <param name="id">The <see cref="Guid"/> of the recipe to retrieve.</param>
     /// <returns>The <see cref="Recipe"/> object with the specified ID.</returns>
-    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetRecipeById(Guid id)
     {
@@ -57,6 +57,10 @@ public class RecipeController : ControllerBase {
         var recipes = await _recipeService.GetRecipesByTags(tagIds);
         return Ok(recipes);
     }
+    
+    #endregion
+    
+    #region POST
 
     /// <summary>
     /// Creates a new recipe with the provided binding model.
@@ -72,6 +76,10 @@ public class RecipeController : ControllerBase {
         }
         return Ok(recipeId);
     }
+    
+    #endregion
+
+    #region PUT
 
     /// <summary>
     /// Edits an existing recipe with the provided binding model.

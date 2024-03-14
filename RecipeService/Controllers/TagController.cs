@@ -9,6 +9,7 @@ namespace RecipeService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TagController : ControllerBase {
     private readonly ITagService _tagService;
     public TagController(ITagService tagService)
@@ -23,7 +24,6 @@ public class TagController : ControllerBase {
     /// <returns>
     /// A list of <see cref="Tag"/> objects.
     /// </returns>
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetTags()
     {
@@ -50,7 +50,6 @@ public class TagController : ControllerBase {
     /// </summary>
     /// <param name="model">The <see cref="TagPostBindingModel"/> containing the new tag's information.</param>
     /// <returns>The newly created <see cref="Tag"/> object.</returns>
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateTag(TagPostBindingModel model)
     {

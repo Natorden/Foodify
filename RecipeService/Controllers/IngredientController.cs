@@ -9,6 +9,7 @@ namespace RecipeService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class IngredientController : ControllerBase {
     private readonly IIngredientService _ingredientService;
     public IngredientController(IIngredientService ingredientService)
@@ -23,7 +24,6 @@ public class IngredientController : ControllerBase {
     /// <returns>
     /// A list of <see cref="Ingredient"/> objects.
     /// </returns>
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetIngredients()
     {
@@ -35,7 +35,6 @@ public class IngredientController : ControllerBase {
     /// </summary>
     /// <param name="query">The search query string.</param>
     /// <returns>A list of <see cref="Ingredient"/> objects.</returns>
-    [Authorize]
     [HttpGet("search")]
     public async Task<IActionResult> GetIngredientsBySearch([Required] [FromQuery] string query)
     {

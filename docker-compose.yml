@@ -4,8 +4,6 @@
     build:
       context: .
       dockerfile: AuthService/Dockerfile
-    ports:
-      - 5000:8080
   recipeservice:
     image: recipeservice
     build:
