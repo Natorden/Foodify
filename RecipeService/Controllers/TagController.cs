@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
@@ -8,6 +9,7 @@ namespace RecipeService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TagController : ControllerBase {
     private readonly ITagService _tagService;
     public TagController(ITagService tagService)

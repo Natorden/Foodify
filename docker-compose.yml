@@ -4,13 +4,16 @@
     build:
       context: .
       dockerfile: AuthService/Dockerfile
-    ports:
-      - 5000:8080
   recipeservice:
     image: recipeservice
     build:
       context: .
       dockerfile: RecipeService/Dockerfile
+  apigateway:
+    image: apiegateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
     ports:
       - 5100:8080
   db:
