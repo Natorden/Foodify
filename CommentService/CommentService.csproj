@@ -14,13 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Core\Models\BindingModels\" />
       <Folder Include="Core\Models\Dtos\" />
-      <Folder Include="Core\Models\Entities\" />
       <Folder Include="Core\Models\Enums\" />
-      <Folder Include="Core\Services\" />
-      <Folder Include="Infrastructure\Interfaces\" />
-      <Folder Include="Infrastructure\Repositories\" />
     </ItemGroup>
 
     <ItemGroup>
