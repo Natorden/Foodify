@@ -14,10 +14,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Core\Models\BindingModels\" />
+      <Folder Include="Core\Models\Dtos\" />
+      <Folder Include="Core\Models\Entities\" />
+      <Folder Include="Core\Models\Enums\" />
+      <Folder Include="Core\Services\" />
+      <Folder Include="Infrastructure\Interfaces\" />
+      <Folder Include="Infrastructure\Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.37" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
-      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
-      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
       <PackageReference Include="Npgsql" Version="8.0.2" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
