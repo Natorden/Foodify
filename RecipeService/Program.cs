@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using E2EChatApp.Infrastructure.Factories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using RecipeService.Core.Models.Exceptions;
 using RecipeService.Extensions;
 using RecipeService.Filters;
 using RecipeService.Infrastructure.Factories;
