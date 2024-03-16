@@ -80,6 +80,7 @@ public class AuthController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Email = requestDto.Email,
+            DisplayName = requestDto.UserName,
             UserName = requestDto.UserName.ToLower()
         };
         IdentityResult result;
