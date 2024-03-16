@@ -37,7 +37,9 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.EmailOrUserName || u.Email == request.EmailOrUserName);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u 
+            => u.NormalizedUserName! == request.EmailOrUserName.ToUpper() 
+            || u.NormalizedEmail!.ToLower() == request.EmailOrUserName.ToUpper());
         if (user == null)
         {
             throw new AuthException("Wrong username or password");
@@ -78,7 +80,7 @@ public class AuthController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Email = requestDto.Email,
-            UserName = requestDto.UserName
+            UserName = requestDto.UserName.ToLower()
         };
         IdentityResult result;
         try
@@ -117,7 +119,7 @@ public class AuthController : ControllerBase
     [HttpGet("username-taken/{username}")]
     public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        return Ok(user != null);
+        var exists = await _userManager.Users.AnyAsync(u => u.NormalizedUserName == username.ToUpper());
+        return Ok(exists);
     }
 }

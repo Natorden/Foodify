@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthService.Controllers;
 
 /// <summary>
-/// Controller responsible for user authentication
+/// Controller responsible for user profiles
 /// </summary>
 [Route("/Identity/[controller]")]
+[ApiController]
 [Authorize]
 public class ProfileController : ControllerBase
 {
@@ -20,14 +21,24 @@ public class ProfileController : ControllerBase
     {
         _userManager = userManager;
     }
-    
+
+    /// <summary>
+    /// Retrieves the profile of the authenticated user.
+    /// </summary>
+    /// <returns>An IActionResult containing the user's profile info.</returns>
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {
         var user = await _userManager.GetUserAsync(User);
-        return Ok(user);
+        return Ok(new UserProfileDto(user!));
     }
-    
+
+    /// <summary>
+    /// Retrieves the profile of a user based on their ID.
+    /// </summary>
+    /// <param name="id">The ID of the user.</param>
+    /// <returns>An IActionResult containing the user's profile info.</returns>
+    /// <exception cref="NotFoundException">Thrown if the user is not found.</exception>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetProfileById(Guid id)
     {
@@ -37,13 +48,20 @@ public class ProfileController : ControllerBase
         }
         return Ok(new UserProfileDto(user));
     }
-    
+
+    /// <summary>
+    /// Updates the profile of the authenticated user.
+    /// </summary>
+    /// <param name="model">The binding model containing the updated profile information.</param>
+    /// <returns>An IActionResult indicating the result of the profile update.</returns>
+    /// <exception cref="NotFoundException">Thrown if the user is not found.</exception>
+    /// <exception cref="BadRequestException">Thrown if the profile update fails.</exception>
     [HttpPut]
     public async Task<IActionResult> UpdateProfile(ProfilePutBindingModel model)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) {
-            return NotFound();
+            throw new NotFoundException("User not found");
         }
         user.DisplayName = model.DisplayName;
         user.ProfilePicturePath = model.ProfilePicturePath;
