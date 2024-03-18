@@ -24,7 +24,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Auth/username-taken/{username}",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
