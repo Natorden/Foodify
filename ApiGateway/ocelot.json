@@ -2,7 +2,6 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/Identity/Auth/Login/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -14,7 +13,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Auth/Register/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -26,7 +24,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Auth/username-taken/{username}",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -38,7 +35,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Auth/valid-token",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -50,7 +46,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Profile/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -62,7 +57,6 @@
     },
     {
       "DownstreamPathTemplate": "/Identity/Profile/{id}",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
@@ -74,7 +68,6 @@
     },
     {
       "DownstreamPathTemplate": "/api/Recipe/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -86,7 +79,6 @@
     },
     {
       "DownstreamPathTemplate": "/api/Recipe/{id}",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -98,7 +90,6 @@
     },
     {
       "DownstreamPathTemplate": "/api/Recipe/tags/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -111,7 +102,6 @@
     
     {
       "DownstreamPathTemplate": "/api/Ingredient/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -123,7 +113,6 @@
     },
     {
       "DownstreamPathTemplate": "/api/Ingredient/search/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -136,7 +125,6 @@
     
     {
       "DownstreamPathTemplate": "/api/Tag/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -148,7 +136,6 @@
     },
     {
       "DownstreamPathTemplate": "/api/Tag/search/",
-      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
@@ -160,6 +147,7 @@
     }
   ],
   "GlobalConfiguration": {
+    "DownstreamScheme": "http",
     "BaseUrl": "http://localhost:5100"
   }
 }
