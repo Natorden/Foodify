@@ -42,7 +42,7 @@ public class ProfileController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetProfileById(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await _userManager.FindByIdAsync(id.ToString()); // TODO: Check this out mr. Rolf
         if (user is null) {
             throw new NotFoundException("User not found");
         }

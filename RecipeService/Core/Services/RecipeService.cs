@@ -20,7 +20,13 @@ public class RecipeService : IRecipeService {
     }
     public async Task<List<ListRecipeDto>> GetAllRecipes()
     {
-        return await _recipeRepository.GetAllRecipes();
+        var recipes = await _recipeRepository.GetAllRecipes();
+        // TODO: This is how I would map it Mr. Rolf
+        /*recipes.ForEach(recipe =>
+        {
+            recipe.CreatedBy = getUserById(recipe.CreatedById);
+        });*/
+        return recipes;
     }
     public async Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags)
     {
