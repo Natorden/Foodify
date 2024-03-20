@@ -53,7 +53,19 @@
         }
       ],
       "UpstreamPathTemplate": "/Identity/Profile/",
-      "UpstreamHttpMethod": [ "Get", "Put" ]
+      "UpstreamHttpMethod": [  "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Profile/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Profile/",
+      "UpstreamHttpMethod": [ "Get" ],
+      "Key": "Profile"
     },
     {
       "DownstreamPathTemplate": "/Identity/Profile/{id}",
@@ -75,7 +87,19 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Recipe/",
-      "UpstreamHttpMethod": [ "Get", "Put", "Post" ]
+      "UpstreamHttpMethod": [ "Get"],
+      "Key": "Recipe"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/",
+      "UpstreamHttpMethod": [  "Put", "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/Recipe/{id}",
@@ -145,6 +169,18 @@
       "UpstreamPathTemplate": "/api/Tag/search/",
       "UpstreamHttpMethod": [ "Get" ]
     }
+  ],
+  "Aggregates": [
+    {
+      "UpstreamPathTemplate" : "/api/Recipe/getProfileAndRecipe",
+      "RouteKeys" : [
+        "Profile",
+        "Recipe"
+      ],
+      "Aggregator": "ProfileAndRecipeAggregator"
+    }
+    
+    
   ],
   "GlobalConfiguration": {
     "DownstreamScheme": "http",

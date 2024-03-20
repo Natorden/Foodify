@@ -1,3 +1,4 @@
+using ApiGateway;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -7,9 +8,7 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
     .AddEnvironmentVariables();
 
 builder.Services.AddOcelot(builder.Configuration);
-
-
-
+builder.Services.AddOcelot().AddSingletonDefinedAggregator<ProfileAndRecipeAggregator>();
 var app = builder.Build();
 await app.UseOcelot();
 
