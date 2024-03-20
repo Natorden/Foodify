@@ -172,7 +172,7 @@
   ],
   "Aggregates": [
     {
-      "UpstreamPathTemplate" : "/api/Recipe/getProfileAndRecipe",
+      "UpstreamPathTemplate" : "/getProfileAndRecipe",
       "RouteKeys" : [
         "Profile",
         "Recipe"
