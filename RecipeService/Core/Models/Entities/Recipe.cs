@@ -6,5 +6,4 @@ public class Recipe {
     public required string Info { get; set; }
     public Guid CreatedById { get; set; }
     public List<Tag> Tags { get; set; } = [];
-    // public required string ImageUrl { get; set; }
 }

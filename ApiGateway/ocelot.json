@@ -179,8 +179,6 @@
       ],
       "Aggregator": "ProfileAndRecipeAggregator"
     }
-    
-    
   ],
   "GlobalConfiguration": {
     "DownstreamScheme": "http",

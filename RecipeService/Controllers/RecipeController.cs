@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
-using RecipeService.Core.Models.Entities;
 using RecipeService.Core.Models.Exceptions;
 
 namespace RecipeService.Controllers;
@@ -21,14 +20,14 @@ public class RecipeController : ControllerBase {
     #region GET
     
     /// <summary>
-    /// Retrieves a recipe with the specified ID.
+    /// Retrieves a recipeDto with the specified ID.
     /// </summary>
     /// <param name="id">The <see cref="Guid"/> of the recipe to retrieve.</param>
-    /// <returns>The <see cref="Recipe"/> object with the specified ID.</returns>
+    /// <returns>The <see cref="RecipeDto"/> object with the specified ID.</returns>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetRecipeById(Guid id)
     {
-        var recipe = await _recipeService.GetRecipeById(id);
+        var recipe = await _recipeService.GetRecipeDtoById(id);
         if (recipe == null) {
             throw new NotFoundException("Recipe not found");
         }

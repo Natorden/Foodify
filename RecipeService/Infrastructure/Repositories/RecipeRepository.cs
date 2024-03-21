@@ -45,6 +45,49 @@ public class RecipeRepository : IRecipeRepository
         return recipeModel;
     }
     
+    public async Task<RecipeDto?> GetRecipeDtoById(Guid id)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        RecipeDto? recipeModel = null;
+        HashSet<string> recipeImages = [];
+        HashSet<Guid> recipeTagIds = [];
+        HashSet<Guid> recipeIngredientIds = [];
+        HashSet<int> recipeStepPriorities = [];
+        
+        const string query =
+            """
+            SELECT 
+                r.id, r.title, r.info, r.created_by_id,
+                rimg.url,
+                t.id, t.name,
+                i.id, i.name, ri.unit, ri.amount,
+                rs.title, rs.description, rs.priority
+            FROM recipes r
+            JOIN recipe_images rimg ON r.id = rimg.recipe_id
+            JOIN recipe_tags rt ON r.id = rt.recipe_id
+            JOIN tags t ON t.id = rt.tag_id
+            JOIN recipe_steps rs ON r.id = rs.recipe_id
+            JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+            JOIN ingredients i ON i.id = ri.ingredient_id
+            WHERE r.id = @id
+            ORDER BY rimg.priority, rt.priority, ri.priority, rs.priority
+            """;
+        await conn.QueryAsync<RecipeDto, string, Tag, RecipeIngredientDto, RecipeStepDto, int, RecipeDto>(
+            query,
+            (recipe, image, tag, ingredient, step, stepPriority) =>
+            {
+                recipeModel ??= recipe;
+                if (recipeImages.Add(image)) recipeModel.Images.Add(image);
+                if (recipeTagIds.Add(tag.Id)) recipeModel.Tags.Add(tag);
+                if (recipeIngredientIds.Add(ingredient.Id)) recipeModel.Ingredients.Add(ingredient);
+                if (recipeStepPriorities.Add(stepPriority)) recipeModel.Steps.Add(step);
+                return recipe;
+            },
+            new {id},
+            splitOn: "id,url,id,id,title,priority");
+        return recipeModel;
+    }
+    
     public async Task<List<ListRecipeDto>> GetAllRecipes()
     {
         using var conn = await _connectionFactory.CreateAsync();

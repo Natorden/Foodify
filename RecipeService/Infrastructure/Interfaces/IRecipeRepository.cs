@@ -12,6 +12,12 @@ public interface IRecipeRepository {
     /// <returns>The <see cref="Recipe"/> object with the specified ID.</returns>
     Task<Recipe?> GetRecipeById(Guid id);
     /// <summary>
+    /// Retrieves a recipeDto with the specified ID.
+    /// </summary>
+    /// <param name="id">The <see cref="Guid"/> of the recipe to retrieve.</param>
+    /// <returns>The <see cref="RecipeDto"/> object with the specified ID.</returns>
+    Task<RecipeDto?> GetRecipeDtoById(Guid id);
+    /// <summary>
     /// Retrieves all recipes from the repository.
     /// </summary>
     /// <returns>A list of <see cref="ListRecipeDto"/> objects representing the recipes.</returns>

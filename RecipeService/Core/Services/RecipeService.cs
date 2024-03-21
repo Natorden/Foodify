@@ -14,9 +14,9 @@ public class RecipeService : IRecipeService {
 
     #region Read
     
-    public async Task<Recipe?> GetRecipeById(Guid id)
+    public async Task<RecipeDto?> GetRecipeDtoById(Guid id)
     {
-        return await _recipeRepository.GetRecipeById(id);
+        return await _recipeRepository.GetRecipeDtoById(id);
     }
     public async Task<List<ListRecipeDto>> GetAllRecipes()
     {
