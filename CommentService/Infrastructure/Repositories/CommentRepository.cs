@@ -1,3 +1,4 @@
+using CommentService.Core.Context;
 using CommentService.Core.Models.BindingModels;
 using CommentService.Core.Models.Entities;
 using CommentService.Infrastructure.Factories;
@@ -8,9 +9,11 @@ namespace CommentService.Infrastructure.Repositories;
 public class CommentRepository : ICommentRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
-    public CommentRepository(IDbConnectionFactory connectionFactory)
+    private readonly CurrentContext _currentContext;
+    public CommentRepository(IDbConnectionFactory connectionFactory, CurrentContext currentContext)
     {
         _connectionFactory = connectionFactory;
+        _currentContext = currentContext;
     }
 
     #region SELECT
@@ -49,7 +52,7 @@ public class CommentRepository : ICommentRepository
             RETURNING id
             """;
         var commentId = await connection.ExecuteScalarAsync<Guid>(query, new {
-            UserId = Guid.NewGuid(), // TODO: Get logged in user id from current context
+            _currentContext.UserId,
             model.RecipeId,
             model.Content,
         });

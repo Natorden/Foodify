@@ -7,8 +7,7 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-builder.Services.AddOcelot(builder.Configuration);
-builder.Services.AddOcelot().AddSingletonDefinedAggregator<ProfileAndRecipeAggregator>();
+builder.Services.AddOcelot(builder.Configuration).AddSingletonDefinedAggregator<ProfileAndRecipeAggregator>();
 var app = builder.Build();
 await app.UseOcelot();
 

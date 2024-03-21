@@ -1,3 +1,4 @@
+using CommentService.Core.Context;
 using CommentService.Core.Interfaces;
 using CommentService.Infrastructure.Interfaces;
 using CommentService.Infrastructure.Repositories;
@@ -19,6 +20,8 @@ public static class ServicesAndRepositoryExtension
         services.AddTransient<ICommentRepository, CommentRepository>();
         
         #endregion
+        
+        services.AddScoped<CurrentContext>();
 
         return services;
     }

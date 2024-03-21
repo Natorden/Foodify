@@ -1,3 +1,4 @@
+using RecipeService.Core.Context;
 using RecipeService.Core.Interfaces;
 using RecipeService.Core.Services;
 using RecipeService.Infrastructure.Interfaces;
@@ -24,6 +25,8 @@ public static class ServicesAndRepositoryExtension
         services.AddTransient<IIngredientRepository, IngredientRepository>();
         
         #endregion
+        
+        services.AddScoped<CurrentContext>();
 
         return services;
     }

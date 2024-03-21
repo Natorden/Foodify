@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using RecipeService.Extensions;
 using RecipeService.Filters;
 using RecipeService.Infrastructure.Factories;
+using RecipeService.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -81,6 +82,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.UseMiddleware<CurrentContextMiddleware>();
+app.UseMiddleware<CurrentContextMiddleware>();
 
 app.Run();

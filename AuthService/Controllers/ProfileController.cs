@@ -42,7 +42,7 @@ public class ProfileController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetProfileById(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString()); // TODO: Check this out mr. Rolf
+        var user = await _userManager.FindByIdAsync(id.ToString());
         if (user is null) {
             throw new NotFoundException("User not found");
         }
@@ -67,7 +67,7 @@ public class ProfileController : ControllerBase
         user.ProfilePicturePath = model.ProfilePicturePath;
         var result = await _userManager.UpdateAsync(user);
         if (result.Succeeded) {
-            return Ok(user);
+            return Ok(new UserProfileDto(user));
         }
         throw new BadRequestException("Failed to update user profile");
     }

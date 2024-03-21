@@ -1,6 +1,7 @@
 using System.Data;
 using Dapper;
 using E2EChatApp.Infrastructure.Factories;
+using RecipeService.Core.Context;
 using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
 using RecipeService.Core.Models.Entities;
@@ -10,9 +11,11 @@ namespace RecipeService.Infrastructure.Repositories;
 public class RecipeRepository : IRecipeRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
-    public RecipeRepository(IDbConnectionFactory connectionFactory)
+    private readonly CurrentContext _currentContext;
+    public RecipeRepository(IDbConnectionFactory connectionFactory, CurrentContext currentContext)
     {
         _connectionFactory = connectionFactory;
+        _currentContext = currentContext;
     }
 
     #region SELECT
@@ -117,10 +120,18 @@ public class RecipeRepository : IRecipeRepository
         const string createRecipeSql = 
             """
                 INSERT INTO recipes (title, info, created_by_id)
-                VALUES (@Title, @Info, gen_random_uuid()) --TODO: use logged in user ID
+                VALUES (@Title, @Info, @UserId)
                 RETURNING id;
             """;
-        var createdId = await conn.ExecuteScalarAsync<Guid>(createRecipeSql, model,transaction);
+        var createdId = await conn.ExecuteScalarAsync<Guid>(
+            createRecipeSql,
+            new {
+                model.Title,
+                model.Info,
+                _currentContext.UserId
+            },
+            transaction
+        );
         
         if (!await CreateRecipeImages(model.Images, conn, createdId, transaction)) return null;
         
