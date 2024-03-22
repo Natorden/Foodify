@@ -10,17 +10,10 @@ namespace RecipeService.Core.Models.Dtos;
 public class ListRecipeDto {
     public Guid Id { get; set; }
     public required string Title { get; set; }
+    public required string Image { get; set; }
     public Guid CreatedById { get; set; }
-    public UserProfile? CreatedBy { get; set; }
     public List<Tag> Tags { get; set; } = [];
     public int Likes { get; set; }
     public int Comments { get; set; }
     // public required string ImageUrl { get; set; }
-}
-
-//TODO: These are the fields I need in the object, up to you to figure out how to retrieve them via messaging
-public class UserProfile {
-    public string ProfilePictureUrl { get; set; }
-    public string DisplayName { get; set; }
-    public string UserName { get; set; }
 }

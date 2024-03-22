@@ -94,10 +94,11 @@ public class RecipeRepository : IRecipeRepository
         var dictionary = new Dictionary<Guid, ListRecipeDto>();
         const string query =
             """
-                SELECT r.Id, title, created_by_id, t.*
+                SELECT r.Id, title, created_by_id, rimg.url AS image, t.id, name
                 FROM recipes r
-                LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
-                LEFT JOIN tags t ON t.id = rt.tag_id;
+                JOIN recipe_images rimg ON r.id = rimg.recipe_id
+                JOIN recipe_tags rt ON r.id = rt.recipe_id
+                JOIN tags t ON t.id = rt.tag_id;
             """;
         await conn.QueryAsync<ListRecipeDto,Tag,ListRecipeDto>(
             query,
