@@ -57,3 +57,10 @@ CREATE TABLE recipe_images(
     url text NOT NULL,
     PRIMARY KEY (recipe_id, priority)
 );
+
+CREATE TABLE recipe_likes(
+    recipe_id uuid NOT NULL
+        CONSTRAINT FK__recipe_likes__recipes REFERENCES recipes,
+    user_id uuid NOT NULL,
+    PRIMARY KEY (recipe_id, user_id)
+);

@@ -76,6 +76,20 @@ public class RecipeController : ControllerBase {
         return Ok(recipeId);
     }
     
+    /// <summary>
+    /// Likes a recipe with the specified ID for the currently logged in user.
+    /// </summary>
+    /// <param name="recipeId">The <see cref="Guid"/> of the recipe to like.</param>
+    [HttpPost("{recipeId:guid}/like")]
+    public async Task<IActionResult> LikeRecipe(Guid recipeId)
+    {
+        var success = await _recipeService.LikeRecipe(recipeId);
+        if (!success) {
+            throw new BadRequestException("Failed to like recipe");
+        }
+        return NoContent();
+    }
+    
     #endregion
 
     #region PUT
@@ -90,6 +104,24 @@ public class RecipeController : ControllerBase {
         var success = await _recipeService.EditRecipe(model);
         if (!success) {
             throw new BadRequestException("Failed to edit recipe");
+        }
+        return NoContent();
+    }
+    
+    #endregion
+
+    #region DELETE
+    
+    /// <summary>
+    /// Unlikes a recipe with the specified ID for the current user.
+    /// </summary>
+    /// <param name="recipeId">The <see cref="Guid"/> of the recipe to unlike.</param>
+    [HttpDelete("{recipeId:guid}/unlike")]
+    public async Task<IActionResult> UnlikeRecipe(Guid recipeId)
+    {
+        var success = await _recipeService.UnlikeRecipe(recipeId);
+        if (!success) {
+            throw new BadRequestException("Failed to unlike recipe");
         }
         return NoContent();
     }

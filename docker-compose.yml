@@ -9,6 +9,11 @@
     build:
       context: .
       dockerfile: RecipeService/Dockerfile
+  commentservice:
+    image: commentservice
+    build:
+      context: .
+      dockerfile: CommentService/Dockerfile
   apigateway:
     image: apiegateway
     build:

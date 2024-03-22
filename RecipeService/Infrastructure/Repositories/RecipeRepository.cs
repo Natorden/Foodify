@@ -56,8 +56,9 @@ public class RecipeRepository : IRecipeRepository
         
         const string query =
             """
-            SELECT 
-                r.id, r.title, r.info, r.created_by_id,
+            SELECT
+                r.id, r.title, r.info, r.created_by_id, 
+                CASE WHEN rl.user_id is NULL THEN 0 ELSE 1 END AS is_Liked,
                 rimg.url,
                 t.id, t.name,
                 i.id, i.name, ri.unit, ri.amount,
@@ -69,6 +70,7 @@ public class RecipeRepository : IRecipeRepository
             JOIN recipe_steps rs ON r.id = rs.recipe_id
             JOIN recipe_ingredients ri ON r.id = ri.recipe_id
             JOIN ingredients i ON i.id = ri.ingredient_id
+            LEFT JOIN recipe_likes rl ON rl.recipe_id = r.id AND rl.user_id = @userId
             WHERE r.id = @id
             ORDER BY rimg.priority, rt.priority, ri.priority, rs.priority
             """;
@@ -83,7 +85,10 @@ public class RecipeRepository : IRecipeRepository
                 if (recipeStepPriorities.Add(stepPriority)) recipeModel.Steps.Add(step);
                 return recipe;
             },
-            new {id},
+            new {
+                id,
+                _currentContext.UserId
+            },
             splitOn: "id,url,id,id,title,priority");
         return recipeModel;
     }
@@ -94,11 +99,15 @@ public class RecipeRepository : IRecipeRepository
         var dictionary = new Dictionary<Guid, ListRecipeDto>();
         const string query =
             """
-                SELECT r.Id, title, created_by_id, rimg.url AS image, t.id, name
-                FROM recipes r
-                JOIN recipe_images rimg ON r.id = rimg.recipe_id
-                JOIN recipe_tags rt ON r.id = rt.recipe_id
-                JOIN tags t ON t.id = rt.tag_id;
+            SELECT 
+                r.Id, title, created_by_id, rimg.url AS image, 
+                CASE WHEN rl.user_id is NULL THEN 0 ELSE 1 END AS is_Liked,
+                t.id, name
+            FROM recipes r
+            JOIN recipe_images rimg ON r.id = rimg.recipe_id
+            JOIN recipe_tags rt ON r.id = rt.recipe_id
+            JOIN tags t ON t.id = rt.tag_id
+            LEFT JOIN recipe_likes rl ON rl.recipe_id = r.id AND rl.user_id = @userId
             """;
         await conn.QueryAsync<ListRecipeDto,Tag,ListRecipeDto>(
             query,
@@ -111,6 +120,9 @@ public class RecipeRepository : IRecipeRepository
                 }
                 recipe.Tags.Add(tag);
                 return recipe;
+            },
+            new {
+                _currentContext.UserId
             });
         return dictionary.Values.ToList();
     }
@@ -189,6 +201,26 @@ public class RecipeRepository : IRecipeRepository
         return createdId;
     }
     
+    public async Task<bool> LikeRecipe(Guid recipeId)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        
+        const string createRecipeSql = 
+            """
+            INSERT INTO recipe_likes (recipe_id, user_id)
+            VALUES (@RecipeId, @UserId)
+            """;
+        var rowsAffected = await conn.ExecuteAsync(
+            createRecipeSql,
+            new {
+                recipeId,
+                _currentContext.UserId
+            }
+        );
+
+        return rowsAffected == 1;
+    }
+    
     #endregion
 
     #region UPDATE
@@ -244,6 +276,31 @@ public class RecipeRepository : IRecipeRepository
         }
         transaction.Commit();
         return true;
+    }
+    
+    #endregion
+
+    #region DELETE
+    
+    public async Task<bool> UnlikeRecipe(Guid recipeId)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        
+        const string createRecipeSql = 
+            """
+            DELETE FROM recipe_likes
+            WHERE recipe_id = @RecipeId
+              AND User_id = @UserId
+            """;
+        var rowsAffected = await conn.ExecuteAsync(
+            createRecipeSql,
+            new {
+                recipeId,
+                _currentContext.UserId
+            }
+        );
+
+        return rowsAffected == 1;
     }
     
     #endregion

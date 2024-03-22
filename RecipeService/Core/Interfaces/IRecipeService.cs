@@ -33,9 +33,23 @@ public interface IRecipeService {
     Task<Guid?> CreateRecipe(RecipePostBindingModel model);
     
     /// <summary>
+    /// Add like of the current user for a recipe with the specified ID.
+    /// </summary>
+    /// <param name="recipeId">The <see cref="Guid"/> of the recipe to add the like to.</param>
+    /// <returns>A <see cref="bool"/> value indicating whether the like was successfully added.</returns>
+    Task<bool> LikeRecipe(Guid recipeId);
+    
+    /// <summary>
     /// Edits an existing recipe with the provided binding model.
     /// </summary>
     /// <param name="model">The <see cref="RecipePutBindingModel"/> that contains the information for the recipe to be edited.</param>
     /// <returns>The <see cref="Guid"/> of the edited recipe.</returns>
     Task<bool> EditRecipe(RecipePutBindingModel model);
+    
+    /// <summary>
+    /// Removes the like of the current user for a recipe with the specified ID.
+    /// </summary>
+    /// <param name="recipeId">The <see cref="Guid"/> of the recipe to remove the like from.</param>
+    /// <returns>A <see cref="bool"/> value indicating whether the like was successfully removed.</returns>
+    Task<bool> UnlikeRecipe(Guid recipeId);
 }

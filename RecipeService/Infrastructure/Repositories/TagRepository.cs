@@ -68,7 +68,7 @@ public class TagRepository : ITagRepository
             """;
         var tagId = await conn.ExecuteScalarAsync<Guid>(sql, new {
             Id = Guid.NewGuid(),
-            model.Name,
+            name = model.Name.Trim().ToLower().Replace(' ', '-'),
         });
         return tagId;
     }

@@ -113,6 +113,28 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
+      "DownstreamPathTemplate": "/api/Recipe/{recipeId}/like",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/recipe/{recipeId}/like",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/{recipeId}/unlike",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/recipe/{recipeId}/unlike",
+      "UpstreamHttpMethod": [ "Delete" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/Recipe/tags/",
       "DownstreamHostAndPorts": [
         {
@@ -167,6 +189,39 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Tag/search/",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comment/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comment/{commentId}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/{commentId}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comment/Recipe/{recipeId}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/Recipe/{recipeId}",
       "UpstreamHttpMethod": [ "Get" ]
     }
   ],

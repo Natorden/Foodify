@@ -6,6 +6,7 @@ public class RecipeDto {
     public Guid Id { get; set; }
     public required string Title { get; set; }
     public required string Info { get; set; }
+    public bool IsLiked { get; set; }
     public Guid CreatedById { get; set; }
     public List<string> Images { get; set; } = [];
     public List<Tag> Tags { get; set; } = [];

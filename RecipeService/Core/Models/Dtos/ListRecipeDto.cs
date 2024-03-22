@@ -11,6 +11,7 @@ public class ListRecipeDto {
     public Guid Id { get; set; }
     public required string Title { get; set; }
     public required string Image { get; set; }
+    public bool IsLiked { get; set; }
     public Guid CreatedById { get; set; }
     public List<Tag> Tags { get; set; } = [];
     public int Likes { get; set; }

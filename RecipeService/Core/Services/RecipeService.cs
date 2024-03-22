@@ -2,6 +2,7 @@ using RecipeService.Core.Interfaces;
 using RecipeService.Core.Models.BindingModels;
 using RecipeService.Core.Models.Dtos;
 using RecipeService.Core.Models.Entities;
+using RecipeService.Core.Models.Exceptions;
 using RecipeService.Infrastructure.Interfaces;
 namespace RecipeService.Core.Services;
 
@@ -33,6 +34,18 @@ public class RecipeService : IRecipeService {
         return await _recipeRepository.GetRecipesByTags(tags);
     }
     
+    public async Task<bool> LikeRecipe(Guid recipeId)
+    {
+        var recipe = await _recipeRepository.GetRecipeDtoById(recipeId);
+        if (recipe is null) {
+            throw new NotFoundException("Recipe not found");
+        }
+        if (recipe.IsLiked) {
+            throw new BadRequestException("Recipe is already liked");
+        }
+        return await _recipeRepository.LikeRecipe(recipeId);
+    }
+    
     #endregion
 
     #region Create
@@ -49,6 +62,22 @@ public class RecipeService : IRecipeService {
     public async Task<bool> EditRecipe(RecipePutBindingModel model)
     {
         return await _recipeRepository.EditRecipe(model);
+    }
+    
+    #endregion
+
+    #region Delete
+    
+    public async Task<bool> UnlikeRecipe(Guid recipeId)
+    {
+        var recipe = await _recipeRepository.GetRecipeDtoById(recipeId);
+        if (recipe is null) {
+            throw new NotFoundException("Recipe not found");
+        }
+        if (!recipe.IsLiked) {
+            throw new BadRequestException("Recipe is not liked");
+        }
+        return await _recipeRepository.UnlikeRecipe(recipeId);
     }
     
     #endregion
