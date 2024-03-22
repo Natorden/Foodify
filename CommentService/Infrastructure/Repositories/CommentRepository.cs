@@ -21,7 +21,13 @@ public class CommentRepository : ICommentRepository
     public async Task<List<Comment>> GetCommentsByRecipeId(Guid recipeId)
     {
         using var connection = await _connectionFactory.CreateAsync();
-        const string query = "SELECT * FROM comments WHERE recipe_id = @RecipeId";
+        const string query = 
+            """
+            SELECT *
+            FROM comments
+            WHERE recipe_id = @RecipeId
+            ORDER BY created_at DESC
+            """;
         var comments = await connection.QueryAsync<Comment>(query, new {
             recipeId
         });
