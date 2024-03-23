@@ -1,4 +1,5 @@
 using RecipeService.Core.Models.Entities;
+using Shared.Models;
 namespace RecipeService.Core.Models.Dtos;
 
 /// <summary>
@@ -13,8 +14,8 @@ public class ListRecipeDto {
     public required string Image { get; set; }
     public bool IsLiked { get; set; }
     public Guid CreatedById { get; set; }
+    public SharedUserProfileDto? CreatedByUser { get; set; }
     public List<Tag> Tags { get; set; } = [];
     public int Likes { get; set; }
-    public int Comments { get; set; }
-    // public required string ImageUrl { get; set; }
+    public int? Comments { get; set; }
 }

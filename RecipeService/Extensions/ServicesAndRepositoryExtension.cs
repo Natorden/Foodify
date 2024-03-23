@@ -3,6 +3,7 @@ using RecipeService.Core.Interfaces;
 using RecipeService.Core.Services;
 using RecipeService.Infrastructure.Interfaces;
 using RecipeService.Infrastructure.Repositories;
+using RecipeService.Infrastructure.RpcClients;
 namespace RecipeService.Extensions;
 
 public static class ServicesAndRepositoryExtension
@@ -23,6 +24,13 @@ public static class ServicesAndRepositoryExtension
         services.AddTransient<IRecipeRepository, RecipeRepository>();
         services.AddTransient<ITagRepository, TagRepository>();
         services.AddTransient<IIngredientRepository, IngredientRepository>();
+        
+        #endregion
+
+        #region gRPC
+        
+        services.AddTransient<IProfileRpcClient, ProfileRpcClient>();
+        services.AddTransient<ICommentRpcClient, CommentRpcClient>();
         
         #endregion
         

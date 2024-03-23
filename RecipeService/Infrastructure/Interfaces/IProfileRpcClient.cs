@@ -1,5 +1,5 @@
 using Shared.Models;
-namespace CommentService.Infrastructure.Interfaces;
+namespace RecipeService.Infrastructure.Interfaces;
 
 public interface IProfileRpcClient {
     /// <summary>
@@ -12,6 +12,6 @@ public interface IProfileRpcClient {
     /// Retrieves a list of user profiles by their unique identifiers.
     /// </summary>
     /// <param name="ids">The list of unique identifiers of the user profiles.</param>
-    /// <returns>Returns a list of user profiles with the specified identifiers, or null if none of the profiles don't exist.</returns>
+    /// <returns>Returns a list of user profiles with the specified identifiers</returns>
     Task<List<SharedUserProfileDto>> GetUserProfilesByIds(IEnumerable<Guid> ids);
 }

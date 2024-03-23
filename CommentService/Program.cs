@@ -4,8 +4,10 @@ using CommentService.Converters;
 using CommentService.Extensions;
 using CommentService.Filters;
 using CommentService.Infrastructure.Factories;
+using CommentService.Infrastructure.RpcServices;
 using CommentService.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
 
@@ -29,6 +31,14 @@ builder.Services.AddGrpcClient<Profile.ProfileClient>(o =>
         ?? throw new NullReferenceException("JWT key cannot be null")
     )
 );
+
+// Split HTTP1 (REST) and HTTP2 (gRPC) to different ports
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080, o => o.Protocols = HttpProtocols.Http1);
+    // Setup a HTTP/2 endpoint without TLS.
+    options.ListenAnyIP(50051, o => o.Protocols = HttpProtocols.Http2);
+});
 
 // Add services to the container.
 builder.Services
@@ -77,6 +87,8 @@ builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 var app = builder.Build();
+
+app.MapGrpcService<CommentRpcService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

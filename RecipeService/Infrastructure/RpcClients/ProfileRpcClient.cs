@@ -1,8 +1,8 @@
-using CommentService.Infrastructure.Interfaces;
 using Grpc.Core;
+using RecipeService.Infrastructure.Interfaces;
 using Shared;
 using Shared.Models;
-namespace CommentService.Infrastructure.RpcClients;
+namespace RecipeService.Infrastructure.RpcClients;
 
 public class ProfileRpcClient : IProfileRpcClient {
     private readonly Profile.ProfileClient _profileClient;
@@ -32,9 +32,10 @@ public class ProfileRpcClient : IProfileRpcClient {
     }
     public async Task<List<SharedUserProfileDto>> GetUserProfilesByIds(IEnumerable<Guid> ids)
     {
+        var request = new ProfileMultiLookupModel();
+        request.Ids.AddRange(ids.Select(id => id.ToString()));
+        
         try {
-            var request = new ProfileMultiLookupModel();
-            request.Ids.AddRange(ids.Select(id => id.ToString()));
             var response = await _profileClient.GetManyUserProfilesAsync(request);
         
             return response?.Profiles.Select(profile => new SharedUserProfileDto {

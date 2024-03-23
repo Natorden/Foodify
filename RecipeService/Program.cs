@@ -7,12 +7,28 @@ using RecipeService.Extensions;
 using RecipeService.Filters;
 using RecipeService.Infrastructure.Factories;
 using RecipeService.Middleware;
+using Shared;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure gRPC
+builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<Profile.ProfileClient>(o => 
+    o.Address = new Uri(
+        builder.Configuration.GetSection("Grpc").GetValue<string>("ProfileAddress")
+        ?? throw new NullReferenceException("ProfileAddress cannot be null")
+    )
+);
+builder.Services.AddGrpcClient<Comment.CommentClient>(o => 
+    o.Address = new Uri(
+        builder.Configuration.GetSection("Grpc").GetValue<string>("CommentAddress")
+        ?? throw new NullReferenceException("CommentAddress cannot be null")
+    )
+);
 
 // Add services to the container.
 builder.Services

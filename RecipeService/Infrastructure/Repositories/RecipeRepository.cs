@@ -99,8 +99,14 @@ public class RecipeRepository : IRecipeRepository
         var dictionary = new Dictionary<Guid, ListRecipeDto>();
         const string query =
             """
+            WITH like_counts AS (
+                SELECT recipe_id, Count(user_id) AS likes 
+                FROM recipe_likes 
+                GROUP BY recipe_id 
+            )            
+
             SELECT 
-                r.Id, title, created_by_id, rimg.url AS image, 
+                r.Id, title, created_by_id, rimg.url AS image, likes,
                 CASE WHEN rl.user_id is NULL THEN 0 ELSE 1 END AS is_Liked,
                 t.id, name
             FROM recipes r
@@ -108,6 +114,7 @@ public class RecipeRepository : IRecipeRepository
             JOIN recipe_tags rt ON r.id = rt.recipe_id
             JOIN tags t ON t.id = rt.tag_id
             LEFT JOIN recipe_likes rl ON rl.recipe_id = r.id AND rl.user_id = @userId
+            LEFT JOIN like_counts ON like_counts.recipe_id = r.id 
             """;
         await conn.QueryAsync<ListRecipeDto,Tag,ListRecipeDto>(
             query,

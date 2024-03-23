@@ -15,7 +15,17 @@ public class CommentService : ICommentService{
     
     public async Task<List<Comment>> GetCommentsByRecipeId(Guid recipeId)
     {
-        return await _commentRepository.GetCommentsByRecipeId(recipeId);
+        var comments = await _commentRepository.GetCommentsByRecipeId(recipeId);
+        
+        var userIds = comments.Select(r => r.UserId);
+        var users = await _profileRpcClient.GetUserProfilesByIds(userIds);
+        // Map the user profiles that were found
+        comments.ForEach(comment =>
+        {
+            comment.User = users.FirstOrDefault(u => u.Id == comment.UserId);
+        });
+
+        return comments;
     }
     
     public async Task<Comment?> GetCommentById(Guid commentId)

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared";
+
+package comments;
+
+service Comment {
+  rpc GetRecipeCommentCount (CommentCountLookupModel) returns (CommentCountReturnModel);
+  rpc GetManyRecipeCommentCounts (CommentCountMultiLookupModel) returns (CommentCountMultiReturnModel);
+}
+
+message CommentCountLookupModel {
+  string recipeId = 1;
+}
+
+message CommentCountMultiLookupModel {
+  repeated string recipeIds = 1;
+}
+
+message CommentCountReturnModel{
+  string id = 1;
+  int32 count = 2;
+}
+
+message CommentCountMultiReturnModel {
+  repeated CommentCountReturnModel comments = 1;
+}

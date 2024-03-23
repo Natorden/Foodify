@@ -8,9 +8,13 @@ namespace RecipeService.Core.Services;
 
 public class RecipeService : IRecipeService {
     private readonly IRecipeRepository _recipeRepository;
-    public RecipeService(IRecipeRepository recipeRepository)
+    private readonly IProfileRpcClient _profileRpcClient;
+    private readonly ICommentRpcClient _commentRpcClient;
+    public RecipeService(IRecipeRepository recipeRepository, IProfileRpcClient profileRpcClient, ICommentRpcClient commentRpcClient)
     {
         _recipeRepository = recipeRepository;
+        _profileRpcClient = profileRpcClient;
+        _commentRpcClient = commentRpcClient;
     }
 
     #region Read
@@ -22,11 +26,16 @@ public class RecipeService : IRecipeService {
     public async Task<List<ListRecipeDto>> GetAllRecipes()
     {
         var recipes = await _recipeRepository.GetAllRecipes();
-        // TODO: This is how I would map it Mr. Rolf
-        /*recipes.ForEach(recipe =>
+        var userIds = recipes.Select(r => r.CreatedById).ToHashSet(); // Only send unique ids
+        var recipeIds = recipes.Select(r => r.Id);
+        var users = await _profileRpcClient.GetUserProfilesByIds(userIds);
+        var commentCounts = await _commentRpcClient.GetCommentCountsByRecipeIds(recipeIds);
+        // Map the user profiles that were found
+        recipes.ForEach(recipe =>
         {
-            recipe.CreatedBy = getUserById(recipe.CreatedById);
-        });*/
+            recipe.CreatedByUser = users.FirstOrDefault(u => u.Id == recipe.CreatedById);
+            recipe.Comments = commentCounts.FirstOrDefault(u => u.recipeId == recipe.Id).count;
+        });
         return recipes;
     }
     public async Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags)

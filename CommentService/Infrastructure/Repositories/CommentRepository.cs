@@ -43,6 +43,36 @@ public class CommentRepository : ICommentRepository
         });
         return comment;
     }
+
+    public async Task<int> GetCommentCount(Guid recipeId)
+    {
+        using var connection = await _connectionFactory.CreateAsync();
+        
+        const string query = "SELECT COUNT(ID) FROM comments WHERE recipe_id = @RecipeId";
+
+        var count = await connection.QuerySingleOrDefaultAsync<int>(query, new {
+            recipeId
+        });
+        return count;
+    }
+
+    public async Task<List<(Guid id, int count)>> getCommentCountsByRecipeIds(IEnumerable<Guid> recipeIds)
+    {
+        using var connection = await _connectionFactory.CreateAsync();
+        
+        const string query = 
+            """
+            SELECT recipe_id, COUNT(ID) AS count
+            FROM comments
+            WHERE recipe_id = ANY(@RecipeIds)
+            GROUP BY recipe_id
+            """;
+
+        var counts = await connection.QueryAsync<(Guid recipeId, int count)>(query, new {
+            recipeIds = recipeIds.ToList()
+        });
+        return counts.ToList();
+    }
     
     #endregion
 

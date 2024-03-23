@@ -22,11 +22,24 @@ public interface ICommentRepository {
     Task<Comment?> GetCommentById(Guid commentId);
 
     /// <summary>
+    /// Retrieves the count of comments for a recipe.
+    /// </summary>
+    /// <param name="recipeId">The unique identifier of the recipe.</param>
+    /// <returns>The count of comments for the specified recipe.</returns>
+    Task<int> GetCommentCount(Guid recipeId);
+
+    /// <summary>
+    /// Retrieves the comment counts for multiple recipes.
+    /// </summary>
+    /// <param name="recipeIds">The unique identifiers of the recipes.</param>
+    /// <returns>A list of tuples containing the recipe ID and its corresponding comment count.</returns>
+    Task<List<(Guid id, int count)>> getCommentCountsByRecipeIds(IEnumerable<Guid> recipeIds);
+
+    /// <summary>
     /// Create a comment about a recipe.
     /// </summary>
     /// <param name="model">The binding model for creating a comment.</param>
     /// <returns>The unique identifier of the created comment.</returns>
     Task<Guid> CreateComment(CommentPostBindingModel model);
-    
-    
+
 }
