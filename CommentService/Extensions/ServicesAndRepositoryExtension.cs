@@ -2,6 +2,7 @@ using CommentService.Core.Context;
 using CommentService.Core.Interfaces;
 using CommentService.Infrastructure.Interfaces;
 using CommentService.Infrastructure.Repositories;
+using CommentService.Infrastructure.RpcClients;
 namespace CommentService.Extensions;
 
 public static class ServicesAndRepositoryExtension
@@ -18,6 +19,12 @@ public static class ServicesAndRepositoryExtension
         #region Repository
         
         services.AddTransient<ICommentRepository, CommentRepository>();
+        
+        #endregion
+
+        #region gRPC
+        
+        services.AddTransient<IProfileRpcClient, ProfileRpcClient>();
         
         #endregion
         

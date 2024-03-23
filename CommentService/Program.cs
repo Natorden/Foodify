@@ -7,8 +7,10 @@ using CommentService.Infrastructure.Factories;
 using CommentService.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -18,6 +20,15 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure gRPC
+builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<Profile.ProfileClient>(o => 
+    o.Address = new Uri(
+        builder.Configuration.GetSection("Grpc").GetValue<string>("ProfileAddress")
+        ?? throw new NullReferenceException("JWT key cannot be null")
+    )
+);
 
 // Add services to the container.
 builder.Services

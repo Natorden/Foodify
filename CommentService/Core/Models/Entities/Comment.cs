@@ -1,3 +1,4 @@
+using Shared.Models;
 namespace CommentService.Core.Models.Entities;
 
 /// <summary>
@@ -12,6 +13,10 @@ public class Comment {
     /// Represents the unique identifier of a user who wrote the comment.
     /// </summary>
     public Guid UserId { get; set; }
+    /// <summary>
+    /// Represents a user who made a comment on a recipe.
+    /// </summary>
+    public SharedUserProfileDto? User { get; set; }
     /// <summary>
     /// Represents the identifier of a recipe.
     /// </summary>
