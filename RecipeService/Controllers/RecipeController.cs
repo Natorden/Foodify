@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeService.Core.Interfaces;
@@ -44,16 +45,41 @@ public class RecipeController : ControllerBase {
         var recipes = await _recipeService.GetAllRecipes();
         return Ok(recipes);
     }
+
+    /// <summary>
+    /// Retrieves a list of recipes that match the provided tags and title name.
+    /// </summary>
+    /// <param name="query">The search query</param>
+    /// <param name="tagIds">The list of tag ids to match.</param>
+    /// <returns>A list of <see cref="RecipeSummaryDto"/> objects that match the provided tags.</returns>
+    [HttpGet("search")]
+    public async Task<IActionResult> GetRecipesBySearch([Required] [FromQuery] string query, [FromQuery] List<Guid> tagIds) 
+    {
+        var recipes = await _recipeService.GetRecipesBySearch(query, tagIds);
+        return Ok(recipes);
+    }
     
     /// <summary>
-    /// Retrieves a list of recipes that match the provided tags.
+    /// Retrieves a list of recipes created by the specified user.
     /// </summary>
-    /// <param name="tagIds">The list of tag ids to match.</param>
-    /// <returns>A list of <see cref="ListRecipeDto"/> objects that match the provided tags.</returns>
-    [HttpGet("tags")]
-    public async Task<IActionResult> GetRecipesByTags([FromBody] List<Guid> tagIds) 
+    /// <param name="userId">The <see cref="Guid"/> of the user.</param>
+    /// <returns>A list of <see cref="RecipeSummaryDto"/> objects representing the recipes created by the user.</returns>
+    [HttpGet("user/{userId:guid}/created")]
+    public async Task<IActionResult> GetRecipesCreatedByUser(Guid userId)
     {
-        var recipes = await _recipeService.GetRecipesByTags(tagIds);
+        var recipes = await _recipeService.GetRecipesCreatedByUser(userId);
+        return Ok(recipes);
+    }
+    
+    /// <summary>
+    /// Retrieves a list of recipes liked by the specified user.
+    /// </summary>
+    /// <param name="userId">The <see cref="Guid"/> of the user.</param>
+    /// <returns>A list of <see cref="RecipeSummaryDto"/> objects representing the recipes liked by the user.</returns>
+    [HttpGet("user/{userId:guid}/liked")]
+    public async Task<IActionResult> GetRecipesLikedByUser(Guid userId)
+    {
+        var recipes = await _recipeService.GetRecipesLikedByUser(userId);
         return Ok(recipes);
     }
     

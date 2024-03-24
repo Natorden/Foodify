@@ -135,14 +135,36 @@
       "UpstreamHttpMethod": [ "Delete" ]
     },
     {
-      "DownstreamPathTemplate": "/api/Recipe/tags/",
+      "DownstreamPathTemplate": "/api/Recipe/search/",
       "DownstreamHostAndPorts": [
         {
           "Host": "recipeservice",
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/api/Recipe/tags/",
+      "UpstreamPathTemplate": "/api/Recipe/search/",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/user/{userId}/created",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/user/{userId}/created",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/user/{userId}/liked",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/user/{userId}/liked",
       "UpstreamHttpMethod": [ "Get" ]
     },
     
@@ -191,6 +213,7 @@
       "UpstreamPathTemplate": "/api/Tag/search/",
       "UpstreamHttpMethod": [ "Get" ]
     },
+    
     {
       "DownstreamPathTemplate": "/api/Comment/",
       "DownstreamHostAndPorts": [

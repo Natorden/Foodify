@@ -27,11 +27,11 @@ public class RecipeRepository : IRecipeRepository
         
         const string query =
             """
-                SELECT r.*, t.*
-                FROM recipes r
-                LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
-                LEFT JOIN tags t ON t.id = rt.tag_id
-                WHERE r.id = @id
+            SELECT r.*, t.*
+            FROM recipes r
+            LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
+            LEFT JOIN tags t ON t.id = rt.tag_id
+            WHERE r.id = @id
             """;
         await conn.QueryAsync<Recipe, Tag, Recipe>(
             query,
@@ -110,7 +110,7 @@ public class RecipeRepository : IRecipeRepository
                 CASE WHEN rl.user_id is NULL THEN 0 ELSE 1 END AS is_Liked,
                 t.id, name
             FROM recipes r
-            JOIN recipe_images rimg ON r.id = rimg.recipe_id
+            JOIN recipe_images rimg ON r.id = rimg.recipe_id AND rimg.priority = 0
             JOIN recipe_tags rt ON r.id = rt.recipe_id
             JOIN tags t ON t.id = rt.tag_id
             LEFT JOIN recipe_likes rl ON rl.recipe_id = r.id AND rl.user_id = @userId
@@ -134,26 +134,68 @@ public class RecipeRepository : IRecipeRepository
         return dictionary.Values.ToList();
     }
     
-    public async Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags)
+    public async Task<List<RecipeSummaryDto>> GetRecipesBySearch(string query, List<Guid> tags)
     {
         using var conn = await _connectionFactory.CreateAsync();
-        var dictionary = new Dictionary<Guid, ListRecipeDto>();
-        const string query =
+        var dictionary = new Dictionary<Guid, RecipeSummaryDto>();
+        const string sql =
             """
             WITH matching_tags AS (
                 SElECT recipe_id, COUNT(tag_id) AS matches FROM recipe_tags rt
-                WHERE tag_id IN @tagIds
+                WHERE tag_id = ANY(@tagIds)
                 GROUP BY recipe_id
             )
             
-            SELECT r.Id,title,created_by_id, t.*
+            SELECT 
+                r.Id, created_by_id, title, rimg.url AS image, 
+                t.id, t.name
             FROM recipes r
-            LEFT JOIN recipe_tags rt ON r.id = rt.recipe_id
-            LEFT JOIN tags t ON t.id = rt.tag_id
-            JOIN matching_tags ON r.id = matching_tags.recipe_id
-            ORDER BY matching_tags.matches DESC;
+            JOIN recipe_tags rt ON r.id = rt.recipe_id
+            JOIN tags t ON t.id = rt.tag_id
+            JOIN recipe_images rimg 
+                ON rimg.recipe_id = r.id 
+               AND rimg.priority = 0
+            LEFT JOIN matching_tags ON r.id = matching_tags.recipe_id
+            WHERE title LIKE @query
+            ORDER BY matching_tags.matches DESC, title;
             """;
-        await conn.QueryAsync<ListRecipeDto,Tag,ListRecipeDto>(
+        await conn.QueryAsync<RecipeSummaryDto,Tag,RecipeSummaryDto>(
+            sql,
+            (recipe, tag) =>
+            {
+                if (dictionary.TryGetValue(recipe.Id, out var recipeMaster)) {
+                    recipe = recipeMaster;
+                } else {
+                    dictionary.Add(recipe.Id,recipe);
+                }
+                recipe.Tags.Add(tag);
+                return recipe;
+            },
+            new {
+                tagIds = tags,
+                query = $"%{query}%"
+            });
+        return dictionary.Values.ToList();
+    }
+
+    public async Task<List<RecipeSummaryDto>> GetRecipesCreatedByUser(Guid userId)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        var dictionary = new Dictionary<Guid, RecipeSummaryDto>();
+        const string query =
+            """
+            SELECT 
+                r.Id, created_by_id, title, rimg.url AS image, 
+                t.id, t.name
+            FROM recipes r
+            JOIN recipe_tags rt ON r.id = rt.recipe_id
+            JOIN tags t ON t.id = rt.tag_id
+            JOIN recipe_images rimg 
+                ON rimg.recipe_id = r.id 
+               AND rimg.priority = 0
+            WHERE created_by_id = @UserId
+            """;
+        await conn.QueryAsync<RecipeSummaryDto, Tag, RecipeSummaryDto>(
             query,
             (recipe, tag) =>
             {
@@ -166,7 +208,43 @@ public class RecipeRepository : IRecipeRepository
                 return recipe;
             },
             new {
-                tagIds = tags
+                userId
+            });
+        return dictionary.Values.ToList();
+    }
+
+    public async Task<List<RecipeSummaryDto>> GetRecipesLikedByUser(Guid userId)
+    {
+        using var conn = await _connectionFactory.CreateAsync();
+        var dictionary = new Dictionary<Guid, RecipeSummaryDto>();
+        const string query =
+            """
+            SELECT 
+                r.Id, created_by_id, title, rimg.url AS image, 
+                t.id, t.name
+            FROM recipes r
+            JOIN recipe_tags rt ON r.id = rt.recipe_id
+            JOIN tags t ON t.id = rt.tag_id
+            JOIN recipe_images rimg 
+                ON rimg.recipe_id = r.id 
+               AND rimg.priority = 0
+            JOIN recipe_likes rl ON rl.recipe_id = r.id
+            WHERE rl.user_id = @UserId
+            """;
+        await conn.QueryAsync<RecipeSummaryDto, Tag, RecipeSummaryDto>(
+            query,
+            (recipe, tag) =>
+            {
+                if (dictionary.TryGetValue(recipe.Id, out var recipeMaster)) {
+                    recipe = recipeMaster;
+                } else {
+                    dictionary.Add(recipe.Id,recipe);
+                }
+                recipe.Tags.Add(tag);
+                return recipe;
+            },
+            new {
+                userId
             });
         return dictionary.Values.ToList();
     }

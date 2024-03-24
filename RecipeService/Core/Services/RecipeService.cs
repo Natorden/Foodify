@@ -38,9 +38,19 @@ public class RecipeService : IRecipeService {
         });
         return recipes;
     }
-    public async Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags)
+    public async Task<List<RecipeSummaryDto>> GetRecipesBySearch(string query, List<Guid> tags)
     {
-        return await _recipeRepository.GetRecipesByTags(tags);
+        return await _recipeRepository.GetRecipesBySearch(query, tags);
+    }
+    
+    public async Task<List<RecipeSummaryDto>> GetRecipesCreatedByUser(Guid userId)
+    {
+        return await _recipeRepository.GetRecipesCreatedByUser(userId);
+    }
+    
+    public async Task<List<RecipeSummaryDto>> GetRecipesLikedByUser(Guid userId)
+    {
+        return await _recipeRepository.GetRecipesLikedByUser(userId);
     }
     
     public async Task<bool> LikeRecipe(Guid recipeId)

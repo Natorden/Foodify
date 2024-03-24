@@ -19,11 +19,26 @@ public interface IRecipeService {
     Task<List<ListRecipeDto>> GetAllRecipes();
 
     /// <summary>
-    /// Retrieves a list of recipes that match the provided tags.
-    /// </summary>
+    /// Retrieves a list of recipes that match the provided tags and title name.
+    /// </summary
+    /// <param name="query">The search query</param>
     /// <param name="tags">The list of tag ids to match.</param>
     /// <returns>A list of <see cref="ListRecipeDto"/> objects that match the provided tags.</returns>
-    Task<List<ListRecipeDto>> GetRecipesByTags(List<Guid> tags);
+    Task<List<RecipeSummaryDto>> GetRecipesBySearch(string query, List<Guid> tags);
+    
+    /// <summary>
+    /// Retrieves a list of summaries for recipes that were made by the the specified user.
+    /// </summary>
+    /// <param name="userId">The id of the user</param>
+    /// <returns>A list of <see cref="RecipeSummaryDto"/> objects that match the provided userId.</returns>
+    Task<List<RecipeSummaryDto>> GetRecipesCreatedByUser(Guid userId);
+    
+    /// <summary>
+    /// Retrieves a list of summaries for recipes that were liked by the the specified user.
+    /// </summary>
+    /// <param name="userId">The id of the user</param>
+    /// <returns>A list of <see cref="RecipeSummaryDto"/> objects that match the provided userId.</returns>
+    Task<List<RecipeSummaryDto>> GetRecipesLikedByUser(Guid userId);
     
     /// <summary>
     /// Creates a new recipe with the provided binding model.
