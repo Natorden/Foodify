@@ -1,21 +1,21 @@
 ﻿services:
   authservice:
-    image: authservice
+    image: nitrozeus1/authservice:${DEPLOY_NUMBER}
     build:
       context: .
       dockerfile: AuthService/Dockerfile
   recipeservice:
-    image: recipeservice
+    image: nitrozeus1/recipeservice:${DEPLOY_NUMBER}
     build:
       context: .
       dockerfile: RecipeService/Dockerfile
   commentservice:
-    image: commentservice
+    image: nitrozeus1/commentservice:${DEPLOY_NUMBER}
     build:
       context: .
       dockerfile: CommentService/Dockerfile
   apigateway:
-    image: apiegateway
+    image: nitrozeus1/apiegateway:${DEPLOY_NUMBER}
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
