@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared";
+
+package profiles;
+
+service Profile {
+  rpc GetUserProfile (ProfileLookupModel) returns (ProfileReturnModel);
+  rpc GetManyUserProfiles (ProfileMultiLookupModel) returns (ProfileMultiReturnModel);
+}
+
+message ProfileLookupModel {
+  string id = 1;
+}
+
+message ProfileMultiLookupModel {
+  repeated string ids = 1;
+}
+
+message ProfileReturnModel{
+  string id = 1;
+  string displayName = 2;
+  string userName = 3;
+  string profilePicturePath = 4;
+}
+
+message ProfileMultiReturnModel {
+  repeated ProfileReturnModel profiles = 1;
+}
+

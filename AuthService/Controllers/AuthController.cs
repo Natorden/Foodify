@@ -24,10 +24,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Login user
+    /// Endpoint for user login to authenticate and generate a JWT token.
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <param name="request">The login request containing the user's email and password.</param>
+    /// <returns>An IActionResult representing the HTTP response.</returns>
     [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResponse))]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
@@ -37,7 +37,9 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Email);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u 
+            => u.NormalizedUserName! == request.EmailOrUserName.ToUpper() 
+            || u.NormalizedEmail!.ToLower() == request.EmailOrUserName.ToUpper());
         if (user == null)
         {
             throw new AuthException("Wrong username or password");
@@ -61,25 +63,25 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Register user
+    /// Register a new user.
     /// </summary>
-    /// <param name="requestDto">Request</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="requestDto">The register request data including email and password.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <returns>An IActionResult representing the result of the registration.</returns>
+    /// <exception cref="AuthException">Thrown when there is an error during the registration process.</exception>
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
 
-        var user = new ApplicationUser()
+        var user = new ApplicationUser
         {
             Id = Guid.NewGuid(),
             Email = requestDto.Email,
-            UserName = requestDto.Email
+            DisplayName = requestDto.UserName,
+            UserName = requestDto.UserName.ToLower()
         };
         IdentityResult result;
         try
@@ -118,25 +120,7 @@ public class AuthController : ControllerBase
     [HttpGet("username-taken/{username}")]
     public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        return Ok(user != null);
-    }
-
-    [HttpGet("valid-token")]
-    public async Task<IActionResult> IsValidTokenForUser([FromQuery] string userId, [FromQuery] string token)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return Ok(false);
-        }
-
-        var isResetTokenValid = await _userManager.VerifyUserTokenAsync(
-            user,
-            _userManager.Options.Tokens.PasswordResetTokenProvider,
-            "ResetPassword", 
-            token);
-
-        return Ok(isResetTokenValid);
+        var exists = await _userManager.Users.AnyAsync(u => u.NormalizedUserName == username.ToUpper());
+        return Ok(exists);
     }
 }

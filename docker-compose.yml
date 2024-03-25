@@ -1,8 +1,33 @@
 ﻿services:
   authservice:
-    image: nitrozeus1/foodify-auth-service:$BUILD_NUMBER
+    image: authservice
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+  recipeservice:
+    image: recipeservice
+    build:
+      context: .
+      dockerfile: RecipeService/Dockerfile
+  commentservice:
+    image: commentservice
+    build:
+      context: .
+      dockerfile: CommentService/Dockerfile
+  apigateway:
+    image: apiegateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
     ports:
-      - 5000:8080
+      - 5100:8080
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YwtnJsMdA8A9ky5XuE7QzyDZwXFyH9WHxTHt
+    ports:
+      - 5432:5432
+    volumes:
+      - ./seed-database:/docker-entrypoint-initdb.d
