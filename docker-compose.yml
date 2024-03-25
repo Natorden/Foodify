@@ -21,3 +21,13 @@
       dockerfile: ApiGateway/Dockerfile
     ports:
       - 5100:8080
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YwtnJsMdA8A9ky5XuE7QzyDZwXFyH9WHxTHt
+    ports:
+      - 5432:5432
+    volumes:
+      - ./seed-database:/docker-entrypoint-initdb.d
