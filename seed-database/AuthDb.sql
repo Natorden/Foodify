@@ -31,25 +31,25 @@ create unique index "RoleNameIndex"
 
 create table public."AspNetUsers"
 (
-    "Id"                               uuid    not null
+    "Id"                   uuid    not null
         constraint "PK_AspNetUsers"
             primary key,
-    "ResetPasswordTokenExpirationDate" timestamp with time zone,
-    "VerifyEmailTokenExpirationDate"   timestamp with time zone,
-    "UserName"                         varchar(256),
-    "NormalizedUserName"               varchar(256),
-    "Email"                            varchar(256),
-    "NormalizedEmail"                  varchar(256),
-    "EmailConfirmed"                   boolean not null,
-    "PasswordHash"                     text,
-    "SecurityStamp"                    text,
-    "ConcurrencyStamp"                 text,
-    "PhoneNumber"                      text,
-    "PhoneNumberConfirmed"             boolean not null,
-    "TwoFactorEnabled"                 boolean not null,
-    "LockoutEnd"                       timestamp with time zone,
-    "LockoutEnabled"                   boolean not null,
-    "AccessFailedCount"                integer not null
+    "UserName"             varchar(256),
+    "NormalizedUserName"   varchar(256),
+    "Email"                varchar(256),
+    "NormalizedEmail"      varchar(256),
+    "EmailConfirmed"       boolean not null,
+    "PasswordHash"         text,
+    "SecurityStamp"        text,
+    "ConcurrencyStamp"     text,
+    "PhoneNumber"          text,
+    "PhoneNumberConfirmed" boolean not null,
+    "TwoFactorEnabled"     boolean not null,
+    "LockoutEnd"           timestamp with time zone,
+    "LockoutEnabled"       boolean not null,
+    "AccessFailedCount"    integer not null,
+    "DisplayName"          text,
+    "ProfilePicturePath"   text
 );
 
 alter table public."AspNetUsers"

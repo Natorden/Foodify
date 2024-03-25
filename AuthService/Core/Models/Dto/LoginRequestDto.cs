@@ -4,11 +4,9 @@ namespace AuthService.Core.Models.Dto;
 public class LoginRequestDto
 {
     /// <summary>
-    /// The user's email address which acts as a user name.
+    /// Represents the email or username property of a login request model.
     /// </summary>
-    /// <example>user@app</example>
-    [EmailAddress]
-    public required string Email { get; init; }
+    public required string EmailOrUserName { get; init; }
 
     /// <summary>
     /// The user's password.
