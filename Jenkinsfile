@@ -9,7 +9,6 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                sh "dotnet build"
                 sh "docker compose build"
             }
         }
@@ -24,7 +23,7 @@ pipeline {
         }
         stage("Deploy") {
             steps {
-                build job: 'Foodify-Deploy', parameters: [[$class: 'StringParameterValue', name: 'DEPLOY_NUMBER', value: "${BUILD_NUMBER}"]]
+                build job: 'Development Branch Pipeline Deploy', parameters: [[$class: 'StringParameterValue', name: 'DEPLOY_NUMBER', value: "${BUILD_NUMBER}"]]
             }   
         }
     }
