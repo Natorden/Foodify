@@ -23,7 +23,7 @@ pipeline {
         }
         stage("Deploy") {
             steps {
-                build job: 'Development Branch Pipeline Deploy', parameters: [[$class: 'StringParameterValue', name: 'DEPLOY_NUMBER', value: "${BUILD_NUMBER}"]]
+                build job: 'Foodify Deploy Pipeline', parameters: [[$class: 'StringParameterValue', name: 'DEPLOY_NUMBER', value: "${BUILD_NUMBER}"]]
             }   
         }
     }
