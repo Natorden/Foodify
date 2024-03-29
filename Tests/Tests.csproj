@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommentService\CommentService.csproj" />
+    <ProjectReference Include="..\RecipeService\RecipeService.csproj" />
   </ItemGroup>
   
 </Project>
