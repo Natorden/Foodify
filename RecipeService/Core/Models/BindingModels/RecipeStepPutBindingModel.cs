@@ -6,6 +6,6 @@ public class RecipeStepPutBindingModel {
     [Length(1,32)]
     public required string Title { get; set; }
     [Required]
-    [Length(1,256)]
+    [Length(1,1024)]
     public required string Description { get; set; }
 }

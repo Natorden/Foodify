@@ -6,7 +6,7 @@ public class RecipePostBindingModel {
     [Length(2,32)]
     public required string Title { get; set; }
     [Required]
-    [MaxLength(1000)]
+    [MaxLength(2048)]
     public required string Info { get; set; }
     [Required]
     [Length(1,6)]
