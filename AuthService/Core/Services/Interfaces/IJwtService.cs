@@ -5,5 +5,5 @@ public interface IJwtService
 {
     string GenerateJwtToken(ApplicationUser user, IEnumerable<string> roles,
         IDictionary<string, dynamic>? customClaims);
-    string GenerateRefreshToken(ApplicationUser user);
+    RefreshToken GenerateRefreshToken();
 }

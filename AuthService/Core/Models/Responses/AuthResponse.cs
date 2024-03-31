@@ -6,5 +6,6 @@ public class AuthResponse
     public Guid UserId { get; set; }
     public string Token { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
+    public DateTime RefreshExpiresAt { get; set; }
     public List<string> Roles { get; set; } = [];
 }

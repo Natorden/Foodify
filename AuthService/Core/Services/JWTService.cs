@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AuthService.Configuration;
 using AuthService.Core.Models;
@@ -44,24 +45,17 @@ public class JwtService : IJwtService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken(ApplicationUser user)
+    public RefreshToken GenerateRefreshToken()
     {
-        var claims = new List<Claim> {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email!)
+        var randomNumber = new byte[32];
+        using var generator = RandomNumberGenerator.Create();
+        
+        generator.GetBytes(randomNumber);
+        return new RefreshToken
+        {
+            Token = Convert.ToBase64String(randomNumber),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationMinutes),
+            CreatedAt = DateTime.UtcNow
         };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Value.Key));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiration = DateTime.Now.AddMinutes(_jwtSettings.Value.RefreshExpirationMinutes);
-
-        var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Value.Issuer,
-            audience: _jwtSettings.Value.Audience,
-            claims: claims,
-            expires: expiration,
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

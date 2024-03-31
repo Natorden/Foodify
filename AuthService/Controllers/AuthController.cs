@@ -61,16 +61,18 @@ public class AuthController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
         
-        // Generate a refresh token for 7 days (Deletes the old token)
-        var refreshToken = _jwtService.GenerateRefreshToken(user);
-        await _userManager.SetAuthenticationTokenAsync(user,_jwtSettings.Value.Issuer,"RefreshToken", refreshToken);
+        var refreshToken = _jwtService.GenerateRefreshToken();
+        
+        user.RefreshTokens.Add(refreshToken);
+        await _userManager.UpdateAsync(user);
         
         return Ok(new AuthResponse
         {
             Email = user.Email!,
             UserId = user.Id,
             Token = token,
-            RefreshToken = refreshToken,
+            RefreshToken = refreshToken.Token,
+            RefreshExpiresAt = refreshToken.ExpiresAt,
             Roles = roles.ToList()
         });
     }
@@ -89,23 +91,28 @@ public class AuthController : ControllerBase
         {
             throw new AuthException("User not found");
         }
-        var refreshIsValid = await _userManager.VerifyUserTokenAsync(user, _jwtSettings.Value.Issuer, "RefreshToken", request.RefreshToken);
-        if (!refreshIsValid) 
+        var refreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token == request.RefreshToken);
+        if (refreshToken is null || !refreshToken.IsActive) 
         {
             throw new AuthException("Invalid refresh token");
         }
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
         
-        var refreshToken = _jwtService.GenerateRefreshToken(user);
-        await _userManager.SetAuthenticationTokenAsync(user,_jwtSettings.Value.Issuer,"RefreshToken", refreshToken);
+        // Revoke the used token, and keep it for archival purposes
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        
+        var newRefreshToken = _jwtService.GenerateRefreshToken();
+        user.RefreshTokens.Add(newRefreshToken);
+        await _userManager.UpdateAsync(user);
         
         return Ok(new AuthResponse
         {
             Email = user.Email!,
             UserId = user.Id,
             Token = token,
-            RefreshToken = refreshToken,
+            RefreshToken = newRefreshToken.Token,
+            RefreshExpiresAt = newRefreshToken.ExpiresAt,
             Roles = roles.ToList()
         });
     }
