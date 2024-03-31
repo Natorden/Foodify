@@ -1,3 +1,5 @@
+using AuthService.Configuration;
+using AuthService.Core.Context;
 using AuthService.Core.Models;
 using AuthService.Core.Models.Dto;
 using AuthService.Core.Models.Exceptions;
@@ -6,6 +8,7 @@ using AuthService.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 namespace AuthService.Controllers;
 
 /// <summary>
@@ -16,11 +19,15 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
+    private readonly IOptions<JwtSettings> _jwtSettings;
+    private readonly CurrentContext _currentContext;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService)
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, IOptions<JwtSettings> jwtSettings, CurrentContext currentContext)
     {
         _userManager = userManager;
         _jwtService = jwtService;
+        _jwtSettings = jwtSettings;
+        _currentContext = currentContext;
     }
 
     /// <summary>
@@ -53,11 +60,52 @@ public class AuthController : ControllerBase
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
+        
+        // Generate a refresh token for 7 days (Deletes the old token)
+        var refreshToken = _jwtService.GenerateRefreshToken(user);
+        await _userManager.SetAuthenticationTokenAsync(user,_jwtSettings.Value.Issuer,"RefreshToken", refreshToken);
+        
         return Ok(new AuthResponse
         {
             Email = user.Email!,
             UserId = user.Id,
             Token = token,
+            RefreshToken = refreshToken,
+            Roles = roles.ToList()
+        });
+    }
+    
+    /// <summary>
+    /// Endpoint for user login to generate a JWT token based on a refresh token.
+    /// </summary>
+    /// <param name="request">The refresh issued ot the user on login.</param>
+    /// <returns>An IActionResult representing the HTTP response.</returns>
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResponse))]
+    public async Task<IActionResult> Login([FromBody] RefreshRequestDto request)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId);
+        if (user == null)
+        {
+            throw new AuthException("User not found");
+        }
+        var refreshIsValid = await _userManager.VerifyUserTokenAsync(user, _jwtSettings.Value.Issuer, "RefreshToken", request.RefreshToken);
+        if (!refreshIsValid) 
+        {
+            throw new AuthException("Invalid refresh token");
+        }
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtService.GenerateJwtToken(user, roles, null);
+        
+        var refreshToken = _jwtService.GenerateRefreshToken(user);
+        await _userManager.SetAuthenticationTokenAsync(user,_jwtSettings.Value.Issuer,"RefreshToken", refreshToken);
+        
+        return Ok(new AuthResponse
+        {
+            Email = user.Email!,
+            UserId = user.Id,
+            Token = token,
+            RefreshToken = refreshToken,
             Roles = roles.ToList()
         });
     }
