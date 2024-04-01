@@ -94,6 +94,13 @@ public class AuthController : ControllerBase
         var refreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token == request.RefreshToken);
         if (refreshToken is null || !refreshToken.IsActive) 
         {
+            // If a revoked token is used to authenticate, all of the user's refresh tokens get revoked.
+            if (refreshToken?.RevokedAt is not null) {
+                foreach (var activeToken in user.RefreshTokens.Where(token => token.RevokedAt is not null)) {
+                    activeToken.RevokedAt = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
+                }
+            }
             throw new AuthException("Invalid refresh token");
         }
         var roles = await _userManager.GetRolesAsync(user);
