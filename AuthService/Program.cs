@@ -22,9 +22,10 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(connectionString ?? throw new Exception("Connection string cannot be null"), b => b.MigrationsAssembly("AuthService"));
+    options.UseNpgsql(connectionString ?? 
+        throw new Exception("Connection string cannot be null"), 
+b => b.MigrationsAssembly("AuthService"));
 });
-
 
 builder.Services.SetupIdentity();
 
@@ -122,7 +123,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.Configure<PasswordHasherOptions>(opt => opt.IterationCount = 210_000);
+builder.Services.Configure<PasswordHasherOptions>(
+    opt => opt.IterationCount = 210_000
+);
 
 var app = builder.Build();
 
@@ -168,6 +171,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

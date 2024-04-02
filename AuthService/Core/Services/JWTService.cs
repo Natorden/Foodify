@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AuthService.Configuration;
 using AuthService.Core.Models;
@@ -42,5 +43,19 @@ public class JwtService : IJwtService
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public RefreshToken GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var generator = RandomNumberGenerator.Create();
+        
+        generator.GetBytes(randomNumber);
+        return new RefreshToken
+        {
+            Token = Convert.ToBase64String(randomNumber),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationMinutes),
+            CreatedAt = DateTime.UtcNow
+        };
     }
 }
