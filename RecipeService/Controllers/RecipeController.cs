@@ -99,7 +99,7 @@ public class RecipeController : ControllerBase {
         if (recipeId is null) {
             throw new BadRequestException("Failed to create recipe");
         }
-        return Ok(recipeId);
+        return Ok(recipeId.ToString());
     }
     
     /// <summary>

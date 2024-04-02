@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentService", "CommentSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{C5633CCC-0280-44BE-BDDB-20C4F013E0B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{89718179-C177-4413-879A-1935303CBA5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{C5633CCC-0280-44BE-BDDB-20C4F013E0B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5633CCC-0280-44BE-BDDB-20C4F013E0B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5633CCC-0280-44BE-BDDB-20C4F013E0B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89718179-C177-4413-879A-1935303CBA5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89718179-C177-4413-879A-1935303CBA5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89718179-C177-4413-879A-1935303CBA5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89718179-C177-4413-879A-1935303CBA5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
