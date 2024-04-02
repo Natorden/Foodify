@@ -1,0 +1,276 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/Identity/Auth/Login/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Auth/Login/",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Auth/Refresh/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Auth/Refresh/",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Auth/Register/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Auth/Register/",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Auth/username-taken/{username}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Auth/username-taken/{username}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Auth/valid-token",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Auth/valid-token",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Profile/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Profile/",
+      "UpstreamHttpMethod": [  "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Profile/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Profile/",
+      "UpstreamHttpMethod": [ "Get" ],
+      "Key": "Profile"
+    },
+    {
+      "DownstreamPathTemplate": "/Identity/Profile/{id}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "authservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/Identity/Profile/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/",
+      "UpstreamHttpMethod": [ "Get"],
+      "Key": "Recipe"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/",
+      "UpstreamHttpMethod": [  "Put", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/{id}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/recipe/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/{recipeId}/like",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/recipe/{recipeId}/like",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/{recipeId}/unlike",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/recipe/{recipeId}/unlike",
+      "UpstreamHttpMethod": [ "Delete" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/search/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/search/",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/user/{userId}/created",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/user/{userId}/created",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Recipe/user/{userId}/liked",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Recipe/user/{userId}/liked",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    
+    {
+      "DownstreamPathTemplate": "/api/Ingredient/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Ingredient/",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Ingredient/search/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Ingredient/search/",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    
+    {
+      "DownstreamPathTemplate": "/api/Tag/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Tag/",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Tag/search/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "recipeservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Tag/search/",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    
+    {
+      "DownstreamPathTemplate": "/api/Comment/",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comment/{commentId}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/{commentId}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comment/Recipe/{recipeId}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "commentService",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/Recipe/{recipeId}",
+      "UpstreamHttpMethod": [ "Get" ]
+    }
+  ],
+  "Aggregates": [
+    {
+      "UpstreamPathTemplate" : "/getProfileAndRecipe",
+      "RouteKeys" : [
+        "Profile",
+        "Recipe"
+      ],
+      "Aggregator": "ProfileAndRecipeAggregator"
+    }
+  ],
+  "GlobalConfiguration": {
+    "DownstreamScheme": "http",
+    "BaseUrl": "http://localhost:5100"
+  }
+}

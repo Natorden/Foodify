@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using AuthService.Configuration;
@@ -6,19 +5,16 @@ using AuthService.Extensions;
 using AuthService.Filters;
 using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.Initialize;
+using AuthService.Infrastructure.RpcServices;
 using AuthService.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// TODO: Serilog perhaps?
-// Add serilog
-// builder.Host.UseSerilog(
-//    (ctx, cfg) => cfg.ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
@@ -26,9 +22,10 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(connectionString ?? throw new Exception("Connection string cannot be null"), b => b.MigrationsAssembly("AuthService"));
+    options.UseNpgsql(connectionString ?? 
+        throw new Exception("Connection string cannot be null"), 
+b => b.MigrationsAssembly("AuthService"));
 });
-
 
 builder.Services.SetupIdentity();
 
@@ -55,6 +52,15 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+builder.Services.AddGrpc();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080, o => o.Protocols = HttpProtocols.Http1);
+    // Setup a HTTP/2 endpoint without TLS.
+    options.ListenAnyIP(50051, o => o.Protocols = HttpProtocols.Http2);
+});
+
 // Add services to the container.
 builder.Services
     .AddControllers(options =>
@@ -68,11 +74,6 @@ builder.Services
 builder.Services.AddProblemDetails();
 
 builder.Services.AddServicesAndRepositories();
-
-// Add fluent validation
-//builder.Services.AddFluentValidationAutoValidation();
-
-//builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -122,33 +123,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// TODO: Cors perhaps?
-/*builder.Services.AddCors(options =>
-{
-    var globalConfig = builder.Configuration.GetSection("Global");
-    options.AddPolicy(name: "Production",
-        policy =>
-        {
-            policy.WithOrigins(
-                    globalConfig.GetValue<string>("FrontEndUrl")
-                        ?? throw new NullReferenceException("FrontEndUrl cannot be null"))
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
-    options.AddPolicy(name: "Development",
-        policy =>
-        {
-            policy.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .SetIsOriginAllowed(_ => true);
-        });
-});*/
-
-builder.Services.Configure<PasswordHasherOptions>(opt => opt.IterationCount = 210_000);
+builder.Services.Configure<PasswordHasherOptions>(
+    opt => opt.IterationCount = 210_000
+);
 
 var app = builder.Build();
+
+app.MapGrpcService<ProfileRpcService>();
 
 
 /*app.UseSerilogRequestLogging(options =>
@@ -187,16 +168,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseCors("Production");
 }
-
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapPost("/hc", () => Results.Ok());
 
 app.UseMiddleware<CurrentContextMiddleware>();
 

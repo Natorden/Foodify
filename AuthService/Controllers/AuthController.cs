@@ -1,3 +1,5 @@
+using AuthService.Configuration;
+using AuthService.Core.Context;
 using AuthService.Core.Models;
 using AuthService.Core.Models.Dto;
 using AuthService.Core.Models.Exceptions;
@@ -6,6 +8,7 @@ using AuthService.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 namespace AuthService.Controllers;
 
 /// <summary>
@@ -16,18 +19,22 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtService _jwtService;
+    private readonly IOptions<JwtSettings> _jwtSettings;
+    private readonly CurrentContext _currentContext;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService)
+    public AuthController(UserManager<ApplicationUser> userManager, IJwtService jwtService, IOptions<JwtSettings> jwtSettings, CurrentContext currentContext)
     {
         _userManager = userManager;
         _jwtService = jwtService;
+        _jwtSettings = jwtSettings;
+        _currentContext = currentContext;
     }
 
     /// <summary>
-    /// Login user
+    /// Endpoint for user login to authenticate and generate a JWT token.
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <param name="request">The login request containing the user's email and password.</param>
+    /// <returns>An IActionResult representing the HTTP response.</returns>
     [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResponse))]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
@@ -37,7 +44,9 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Email);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u 
+            => u.NormalizedUserName! == request.EmailOrUserName.ToUpper() 
+            || u.NormalizedEmail!.ToLower() == request.EmailOrUserName.ToUpper());
         if (user == null)
         {
             throw new AuthException("Wrong username or password");
@@ -51,35 +60,90 @@ public class AuthController : ControllerBase
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtService.GenerateJwtToken(user, roles, null);
+        
+        var refreshToken = _jwtService.GenerateRefreshToken();
+        
+        user.RefreshTokens.Add(refreshToken);
+        await _userManager.UpdateAsync(user);
+        
         return Ok(new AuthResponse
         {
             Email = user.Email!,
             UserId = user.Id,
             Token = token,
+            RefreshToken = refreshToken.Token,
+            RefreshExpiresAt = refreshToken.ExpiresAt,
+            Roles = roles.ToList()
+        });
+    }
+    
+    /// <summary>
+    /// Endpoint for user login to generate a JWT token based on a refresh token.
+    /// </summary>
+    /// <param name="request">The refresh issued ot the user on login.</param>
+    /// <returns>An IActionResult representing the HTTP response.</returns>
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResponse))]
+    public async Task<IActionResult> Login([FromBody] RefreshRequestDto request)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId);
+        if (user == null)
+        {
+            throw new AuthException("User not found");
+        }
+        var refreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token == request.RefreshToken);
+        if (refreshToken is null || !refreshToken.IsActive) 
+        {
+            // If a revoked token is used to authenticate, all of the user's refresh tokens get revoked.
+            if (refreshToken?.RevokedAt is not null) {
+                foreach (var activeToken in user.RefreshTokens.Where(token => token.RevokedAt is not null)) {
+                    activeToken.RevokedAt = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+            throw new AuthException("Invalid refresh token");
+        }
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtService.GenerateJwtToken(user, roles, null);
+        
+        // Revoke the used token, and keep it for archival purposes
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        
+        var newRefreshToken = _jwtService.GenerateRefreshToken();
+        user.RefreshTokens.Add(newRefreshToken);
+        await _userManager.UpdateAsync(user);
+        
+        return Ok(new AuthResponse
+        {
+            Email = user.Email!,
+            UserId = user.Id,
+            Token = token,
+            RefreshToken = newRefreshToken.Token,
+            RefreshExpiresAt = newRefreshToken.ExpiresAt,
             Roles = roles.ToList()
         });
     }
 
     /// <summary>
-    /// Register user
+    /// Register a new user.
     /// </summary>
-    /// <param name="requestDto">Request</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="requestDto">The register request data including email and password.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <returns>An IActionResult representing the result of the registration.</returns>
+    /// <exception cref="AuthException">Thrown when there is an error during the registration process.</exception>
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
 
-        var user = new ApplicationUser()
+        var user = new ApplicationUser
         {
             Id = Guid.NewGuid(),
             Email = requestDto.Email,
-            UserName = requestDto.Email
+            DisplayName = requestDto.UserName,
+            UserName = requestDto.UserName.ToLower()
         };
         IdentityResult result;
         try
@@ -118,25 +182,7 @@ public class AuthController : ControllerBase
     [HttpGet("username-taken/{username}")]
     public async Task<IActionResult> IsUsernameTaken([FromRoute] string username)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        return Ok(user != null);
-    }
-
-    [HttpGet("valid-token")]
-    public async Task<IActionResult> IsValidTokenForUser([FromQuery] string userId, [FromQuery] string token)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return Ok(false);
-        }
-
-        var isResetTokenValid = await _userManager.VerifyUserTokenAsync(
-            user,
-            _userManager.Options.Tokens.PasswordResetTokenProvider,
-            "ResetPassword", 
-            token);
-
-        return Ok(isResetTokenValid);
+        var exists = await _userManager.Users.AnyAsync(u => u.NormalizedUserName == username.ToUpper());
+        return Ok(exists);
     }
 }

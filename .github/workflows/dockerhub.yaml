@@ -16,7 +16,13 @@ jobs:
       matrix:
         include:
           - dockerfile: ./AuthService/Dockerfile
-            image: nitrozeus1/foodify-auth-service
+            image: nitrozeus1/authservice
+          - dockerfile: ./RecipeService/Dockerfile
+            image: nitrozeus1/recipeservice
+          - dockerfile: ./CommentService/Dockerfile
+            image: nitrozeus1/commentservice
+          - dockerfile: ./ApiGateway/Dockerfile
+            image: nitrozeus1/apiegateway
     permissions:
       contents: read
       packages: write

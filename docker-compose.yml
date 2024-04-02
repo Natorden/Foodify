@@ -1,17 +1,32 @@
 ﻿services:
   authservice:
-    image: authservice
+    image: nitrozeus1/authservice:${DEPLOY_NUMBER}
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+  recipeservice:
+    image: nitrozeus1/recipeservice:${DEPLOY_NUMBER}
+    build:
+      context: .
+      dockerfile: RecipeService/Dockerfile
+  commentservice:
+    image: nitrozeus1/commentservice:${DEPLOY_NUMBER}
+    build:
+      context: .
+      dockerfile: CommentService/Dockerfile
+  apigateway:
+    image: nitrozeus1/apiegateway:${DEPLOY_NUMBER}
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
     ports:
-      - 5000:8080
+      - 5100:8080
   db:
     image: postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: YwtnJsMdA8A9ky5XuE7QzyDZwXFyH9WHxTHt
     ports:
       - 5432:5432
     volumes:

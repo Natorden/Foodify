@@ -17,7 +17,7 @@ namespace AuthService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -62,6 +62,9 @@ namespace AuthService.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -92,8 +95,8 @@ namespace AuthService.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTimeOffset?>("ResetPasswordTokenExpirationDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("ProfilePicturePath")
+                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -104,9 +107,6 @@ namespace AuthService.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
-
-                    b.Property<DateTimeOffset?>("VerifyEmailTokenExpirationDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -221,6 +221,43 @@ namespace AuthService.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("AuthService.Core.Models.ApplicationUser", b =>
+                {
+                    b.OwnsMany("AuthService.Core.Models.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<Guid>("ApplicationUserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.Property<DateTime>("ExpiresAt")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.Property<DateTime?>("RevokedAt")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.Property<string>("Token")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ApplicationUserId", "Id");
+
+                            b1.ToTable("RefreshToken");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationUserId");
+                        });
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
