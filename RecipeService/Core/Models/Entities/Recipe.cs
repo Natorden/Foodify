@@ -6,4 +6,7 @@ public class Recipe {
     public required string Info { get; set; }
     public Guid CreatedById { get; set; }
     public List<Tag> Tags { get; set; } = [];
+    public List<Ingredient> Ingredients { get; set; } = [];
+    public List<RecipeStep> Steps { get; set; } = [];
+    // public required string ImageUrl { get; set; }
 }

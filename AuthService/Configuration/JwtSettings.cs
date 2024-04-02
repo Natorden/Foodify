@@ -18,8 +18,13 @@ public class JwtSettings
     public string Audience { get; set; } = null!;
 
     /// <summary>
-    /// JWT expiration in minutes
+    /// JWT access token expiration in minutes
     /// </summary>
     public int ExpirationMinutes { get; set; }
+
+    /// <summary>
+    /// JWT refresh token expiration in minutes
+    /// </summary>
+    public int RefreshExpirationMinutes { get; set; }
 }
 
